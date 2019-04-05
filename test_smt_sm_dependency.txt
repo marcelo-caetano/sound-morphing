@@ -1,0 +1,56 @@
+Required m-files:
+/Users/mcaetano/OneDrive/MATLAB/Fundamental_Frequency/swipep.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/OLA/colasum.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/OLA/gencolawin.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/OLA/ola.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/OLA/sof.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/frequency_integration.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/mindb.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/parameter_interpolation.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/peak2track.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/peak_matching_tracks.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/peak_matching_withoutphase.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/peak_picking.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/phase_interp.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/quad_interp.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/sinusoidal_analysis_frame.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/sinusoidal_analysis_test.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/sinusoidal_resynthesis_OLA.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/sinusoidal_resynthesis_PI.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/sinusoidal_resynthesis_PI_test.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/sinusoidal_resynthesis_test.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/sinusoidal_resynthesis_without_phase_PI.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/stationary_synthesis.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/track2harm.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/track2peak.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SM/xqifft.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SMT/interp_sin.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SMT/partial_matching.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SMT/zp2max.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SOLA-FS/olafs.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SOLA-FS/soffs.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/SOLA-FS/solafs.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/STFT/stft.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Data/xqifft.mat
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Misc/makepath.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Misc/rsf.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/cfw.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/f2s.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/infowin.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/isevenl.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/isoddl.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/lhw.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/lp2zp.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/nframes.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/rhw.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/rmsdb.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/rmslevel.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/s2f.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/stereo2mono.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Resources/zpad.m
+/Users/mcaetano/OneDrive/MATLAB/M Caetano/DSP/_Test/test_smt_sm.m
+/Users/mcaetano/OneDrive/MATLAB/_presentations/2018_Timbre_SMT/makefigonlywaveform.m
+/Users/mcaetano/OneDrive/MATLAB/_presentations/2018_Timbre_SMT/makefigspecpeakgram.m
+Required MATLAB Toolboxes:
+MATLAB
+Signal Processing Toolbox
