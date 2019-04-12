@@ -4,4 +4,4 @@ https://www.mcgill.ca/timbre2018/
 
 Run the Matlab script 'test_smt_sm.m'
 
-The file 'test_smt_sm_dependencies.txt' lists all file dependencies.
+The file 'run_smt_sm_dependencies.txt' lists all file dependencies.
