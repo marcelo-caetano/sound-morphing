@@ -11,7 +11,9 @@ function win = gencolawin(winlen,wintype)
 %   5 - Blackman
 %   6 - Blackman-Harris
 %   7 - Hamming
-% See also coladen, colasum, colacond, colahs, ol2hs
+% See also coladen, colasum, iscola, colahs, ol2hs
+
+% Marcelo Caetano 2019
 
 if isevenl(winlen)
     % Even window length

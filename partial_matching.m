@@ -254,7 +254,10 @@ else
     if any(not(isnan(freqNext(peakMatchNext(indMove)))))
         
         aux = freqNext(peakMatchNext(indMove));
-        fprintf(1,'Peak crushed %5.2f\n',aux(not(isnan(aux))));
+        dispflag = 's';
+        if strcmpi(dispflag,'v')
+            fprintf(1,'Peak crushed %5.2f\n',aux(not(isnan(aux))));
+        end
         % keyboard
         
     end

@@ -1,4 +1,4 @@
-function [sinusoidal,partials,amplitudes,frequencies,new_amp,new_freq,new_phase] = sinusoidal_resynthesis_PI(amp,freq,ph,delta,hopsize,framesize,sr,nsample,cframe,cfwflag,maxnpeak,dispflag)
+function [sinusoidal,partials,amplitudes,frequencies] = sinusoidal_resynthesis_PRFI(amp,freq,delta,hopsize,framesize,sr,nsample,cframe,cfwflag,maxnpeak,dispflag)
 %SINUSOIDAL_RESYNTHESIS_PI Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -7,9 +7,9 @@ function [sinusoidal,partials,amplitudes,frequencies,new_amp,new_freq,new_phase]
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Check number if input arguments
-narginchk(11,12);
+narginchk(10,11);
 
-if nargin == 11
+if nargin == 10
     
     dispflag = 's';
     
@@ -52,81 +52,90 @@ switch lower(cfwflag)
 end
 
 % Preallocate for NFRAME
-new_amp = cell(1,nframe);
-new_freq = cell(1,nframe);
-new_phase = cell(1,nframe);
-
-% new_new_amp = cell(1,nframe);
-% new_new_freq = cell(1,nframe);
-% new_new_phase = cell(1,nframe);
+new_amp = cell(nframe,1);
+new_freq = cell(nframe,1);
+phase_prev = cell(nframe,1);
+new_phase_prev = cell(nframe,1);
 
 % Preallocate
 sinusoidal = zeros(nsample+2*shift,1);
 partials = zeros(nsample+2*shift,maxnpeak);
 amplitudes = zeros(nsample+2*shift,maxnpeak);
 frequencies = zeros(nsample+2*shift,maxnpeak);
-
-% partials = cell(nframe,1);
-% amplitudes = cell(nframe,1);
-% frequencies = cell(nframe,1);
+phases = zeros(nsample+2*shift,maxnpeak);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% SYNTHESIS BY PARAMETER INTERPOLATION
+% ADDITIVE RESYNTHESIS WITHOUT PHASE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 for iframe = 1:nframe-1
     
     if strcmpi(dispflag,'v')
         
-        fprintf(1,'PI synthesis between frame %d and %d\n',iframe,iframe+1);
+        fprintf(1,'ADD synthesis between frame %d and %d\n',iframe,iframe+1);
         
     end
     
-    if iframe == 1 && cframe(iframe) > 1
+    if iframe == 1 && cframe(iframe) > 1 % FIRST FRAME & CFLAG == HALF
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % FROM CFRAME-LHW(WINSIZE) TO CFRAME (LEFT HALF OF FIRST WINDOW)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        % Parameter interpolation & Additive resynthesis (with linear ph estimation)
-        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(amp{iframe},amp{iframe},freq{iframe},freq{iframe},ph{iframe}-(freq{iframe}*2*pi*lhw(framesize)/sr),ph{iframe},lhw(framesize),sr);
+        % When FREQUENCY_INTEGRATION uses COS for resynthesis
+        % phase_prev{iframe} = -pi/2*ones(size(amp{iframe}));
+        
+        % When FREQUENCY_INTEGRATION uses SIN for resynthesis
+        phase_prev{iframe} = zeros(size(amp{iframe}));
+        
+        % Parameter interpolation & Additive resynthesis (with linear phase estimation)
+        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(zeros(size(amp{iframe})),amp{iframe},freq{iframe},freq{iframe},phase_prev{iframe},lhw(framesize),sr);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)-lhw(framesize)+shift:cframe(iframe)-1+shift) = sin_model;
         partials(cframe(iframe)-lhw(framesize)+shift:cframe(iframe)-1+shift,1:size(partial_model,2)) = partial_model;
         amplitudes(cframe(iframe)-lhw(framesize)+shift:cframe(iframe)-1+shift,1:size(amp_model,2)) = amp_model;
         frequencies(cframe(iframe)-lhw(framesize)+shift:cframe(iframe)-1+shift,1:size(freq_model,2)) = freq_model/(2*pi);
+        phases(cframe(iframe)-lhw(framesize)+shift:cframe(iframe)-1+shift,1:size(phase,2)) = phase;
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % FROM CFRAME TO CFRAME+HOPSIZE (RIGHT HALF OF FIRST WINDOW)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        % [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,sr);
-        [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching_tracks(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,sr);
+        % Peak matching
+        [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase_prev{iframe}] = peak_matching_withoutphase(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},phase_prev{iframe},delta);
         
         % Parameter interpolation & Additive resynthesis
-        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1},hopsize,sr);
+        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase_prev{iframe},hopsize,sr);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)+shift:cframe(iframe+1)-1+shift) = sin_model;
         partials(cframe(iframe)+shift:cframe(iframe+1)-1+shift,1:size(partial_model,2)) = partial_model;
         amplitudes(cframe(iframe)+shift:cframe(iframe+1)-1+shift,1:size(amp_model,2)) = amp_model;
         frequencies(cframe(iframe)+shift:cframe(iframe+1)-1+shift,1:size(freq_model,2)) = freq_model/(2*pi);
+        phases(cframe(iframe)+shift:cframe(iframe+1)-1+shift,1:size(phase,2)) = phase;
         
-    elseif iframe == nframe-1 && cframe(iframe) < nsample
+        
+    elseif iframe == nframe-1 && cframe(iframe) < nsample % LAST FRAME & CFLAG ~= NHALF
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         % FROM CFRAME TO CFRAME+RHW(WINSIZE) (RIGHT HALF OF LAST WINDOW)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        % Parameter interpolation & Additive resynthesis (with linear ph estimation)
-        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(amp{iframe},amp{iframe},freq{iframe},freq{iframe},ph{iframe},ph{iframe}+(freq{iframe}*2*pi*(nsample-cframe(iframe)+1)/sr),nsample-cframe(iframe)+1,sr);
+        % phase_prev{iframe} = kt(ismember(new_freq{iframe},freq{iframe}));
+        phase_prev{iframe} = phase(end,ismember(new_freq{iframe},freq{iframe}));
+        
+        
+        % Parameter interpolation & Additive resynthesis (with linear phase estimation)
+        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(amp{iframe},amp{iframe},freq{iframe},freq{iframe},phase_prev{iframe},nsample-cframe(iframe)+1,sr);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)+shift:nsample+shift) = sin_model;
         partials(cframe(iframe)+shift:nsample+shift,1:size(partial_model,2)) = partial_model;
         amplitudes(cframe(iframe)+shift:nsample+shift,1:size(amp_model,2)) = amp_model;
         frequencies(cframe(iframe)+shift:nsample+shift,1:size(freq_model,2)) = freq_model/(2*pi);
+        phases(cframe(iframe)+shift:nsample+shift,1:size(phase,2)) = phase;
+        
         
     else
         
@@ -134,18 +143,28 @@ for iframe = 1:nframe-1
         % FROM CFRAME TO CFRAME+HOPSIZE (BETWEEN CENTER OF CONSECUTIVE WINDOWS)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
+        if iframe == 1
+            
+            phase_prev{iframe} = zeros(size(amp{iframe}));
+            
+        else
+            
+            phase_prev{iframe} = phase(end,ismember(new_freq{iframe},freq{iframe}));
+            
+        end
+        
         % Peak matching
-        % [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,sr);
-        [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching_tracks(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,sr);
+        [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase_prev{iframe}] = peak_matching_withoutphase(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},phase_prev{iframe},delta);
         
         % Parameter interpolation & Additive resynthesis
-        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1},hopsize,sr);
+        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase_prev{iframe},hopsize,sr);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)+shift:cframe(iframe+1)-1+shift) = sin_model;
         partials(cframe(iframe)+shift:cframe(iframe+1)-1+shift,1:size(partial_model,2)) = partial_model;
         amplitudes(cframe(iframe)+shift:cframe(iframe+1)-1+shift,1:size(amp_model,2)) = amp_model;
         frequencies(cframe(iframe)+shift:cframe(iframe+1)-1+shift,1:size(freq_model,2)) = freq_model/(2*pi);
+        phases(cframe(iframe)+shift:cframe(iframe+1)-1+shift,1:size(phase,2)) = phase;
         
     end
     
@@ -156,12 +175,5 @@ sinusoidal = sinusoidal(1+shift:nsample+shift);
 partials = partials(1+shift:nsample+shift,:);
 amplitudes = amplitudes(1+shift:nsample+shift,:);
 frequencies = frequencies(1+shift:nsample+shift,:);
-
-a = 1;
-
-% % Remove extra partials
-% partials = partials(partials~=0);
-% amplitudes = amplitudes(amplitudes~=0);
-% frequencies = frequencies(frequencies~=0);
 
 end

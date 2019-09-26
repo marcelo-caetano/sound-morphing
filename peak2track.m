@@ -1,6 +1,22 @@
-function [amppart,freqpart,phasepart,npartial] = peak2track(amp,freq,phase,nframe,maxnpeak,nfft,sr,delta)
+function [amppart,freqpart,phasepart,npartial] = peak2track(amp,freq,ph,nframe,maxnpeak,nfft,sr,delta,dispflag)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHECK FUNCTION INPUT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+narginchk(8,9)
+
+if nargin == 8
+    
+    dispflag = 's';
+    
+end
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FUNCTION BODY
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Bin of FFT
 binfft = sr/nfft;
@@ -24,7 +40,7 @@ for iframe = 1:nframe
     
     amppeak(1:npeak(iframe),iframe) = amp{iframe};
     freqpeak(1:npeak(iframe),iframe) = freq{iframe};
-    phasepeak(1:npeak(iframe),iframe) = phase{iframe};
+    phasepeak(1:npeak(iframe),iframe) = ph{iframe};
     
 end
 
@@ -139,7 +155,7 @@ emptyTrack = false(nbin,nframe);
 
 
 for iframe = 1:nframe-1
-       
+    
     % Match
     [ampbin(:,iframe),ampbin(:,iframe+1),freqbin(:,iframe),freqbin(:,iframe+1),phasebin(:,iframe),phasebin(:,iframe+1),death(:,iframe),birth(:,iframe),match(:,iframe),emptyTrack(:,iframe)] = ...
         partial_matching(ampbin(:,iframe),ampbin(:,iframe+1),freqbin(:,iframe),freqbin(:,iframe+1),phasebin(:,iframe),phasebin(:,iframe+1),nbin,delta);
@@ -154,16 +170,16 @@ a=1;
 
 % % Initialize track
 % istrack = false(nbin,1);
-% 
+%
 % for itrack = 1:nbin
-%     
+%
 %     istrack(itrack) = not(all(isnan(freqbin(itrack,:))));
-%     
+%
 % end
-% 
+%
 % % Number of tracks
 % ntrack = nnz(istrack);
-% 
+%
 % freqtrack = freqtrack(istrack,:);
 % amptrack = amptrack(istrack,:);
 % phasetrack = phasetrack(istrack,:);
@@ -278,7 +294,11 @@ phasepart = nan(nbin,nframe);
 % Run through all tracks and merge
 for ibin = 1:nbin
     
-    fprintf(1,'Track %d of %d\n',ibin,nbin);
+    if strcmpi(dispflag,'v')
+        
+        fprintf(1,'Track %d of %d\n',ibin,nbin);
+        
+    end
     
     if indkeep(ibin) || ibin == nbin
         
@@ -298,7 +318,11 @@ for ibin = 1:nbin
             % Merge 3 tracks
             for count = posadj(ismember(posadj,ibin)):min(posadj(ismember(posadj,ibin))+2,nbin)
                 
-                fprintf(1,'Track %d of %d\n',count,nbin);
+                if strcmpi(dispflag,'v')
+                    
+                    fprintf(1,'Track %d of %d\n',count,nbin);
+                    
+                end
                 
                 % Find indices of frequencies
                 ind = not(isnan(freqbin(count,:)));
