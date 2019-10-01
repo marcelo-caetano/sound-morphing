@@ -2,9 +2,6 @@
 % ADD FOLDER FROM CURRENTLY RUNNING SCRIPT TO MATLAB PATH
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Get current working directory
-currDir = pwd;
-
 % Get full path & name of executing file
 exeFile = mfilename('fullpath');
 
@@ -16,3 +13,6 @@ addpath(genpath(exeDir));
 
 % Change into directory of currently executing file
 cd(exeDir);
+
+% Delete created variables
+clear exeFile exeDir;
