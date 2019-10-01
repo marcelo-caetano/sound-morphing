@@ -6,10 +6,10 @@ The SMT is a set of Matlab functions that implement a sound morphing algorithm f
 
 1. Download and unzip the files to a folder (e.g., */userhome/myfolder*)
 2. Start Matlab
-3. Open the SMT folder (e.g., */userhome/myfolder*) in Matlab (i.e., navigate to */userhome/myfolder* under the **Current Folder** menu)
-4. Add the SMT folder (e.g., */userhome/myfolder*) to your Matlab path. Alternatively, run the script *add2path_smt.m* inside the SMT folder. Double click on *add2path_smt.m* to open it in the **Editor** and click on **Run**
-5. Open and run the script *run_smt.m* to generate the example.
-6. Add your own sounds to the *./audio* subfolder and edit *run_smt.m* appropriately to morph your own sounds
+3. Open the SMT folder (e.g., */userhome/myfolder*) in Matlab (Navigate to */userhome/myfolder* under the **Current Folder** menu)
+4. Add the SMT folder (e.g., */userhome/myfolder*) to your Matlab path. Alternatively, run the script *add2path_smt.m* inside the SMT folder. (Type *add2path_smt.m* in the **Command Terminal** or double click on *add2path_smt.m* to open it in the **Editor** and click on **Run**)
+5. Run the script *run_smt.m* to generate the example.
+6. Add your own sounds to the *./audio* subfolder, open and edit *run_smt.m* appropriately to morph your own sounds
 
 ## Dependencies
 
