@@ -1,7 +1,7 @@
 function [sin_harm_morph] = smt(source_path,target_path,morph_factor)
 %SMT Sound morphing toolbox
 %   M = SMT(S,T,ALPHA) generates the morph M between the source S and the
-%   target T according to the morphing factor ALPHA. ALPHA is between 0 and
+%   target T according to the morphing factor ALPHA varying between 0 and
 %   1. When ALPHA=0 M=S and when ALPHA=1 M=T. Intermediate values of ALPHA
 %   generate M between S and T.
 
@@ -188,7 +188,7 @@ nframe_target = length(cframe_target);
 
 [interp_amp,interp_freq] = interp_sin(amp_harm_source,freq_harm_source,...
     ref0_source,ntrack_source,amp_harm_target,freq_harm_target,ref0_target,...
-    ntrack_target,nframe_target,morph_factor);
+    ntrack_target,nframe_target,morph_factor,'log');
 
 interp_phase = zeros(size(interp_freq));
 
