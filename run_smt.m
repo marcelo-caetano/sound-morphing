@@ -4,7 +4,7 @@
 % INPUT PARAMETERS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Path relative to CURREXFILE
+% Path relative to SMT folder
 sourcePath = fullfile('.','audio','Accordion_C#3_f.wav');
 
 targetPath = fullfile('.','audio','Tuba_oV_hA_2-120_ff_C3.wav');
