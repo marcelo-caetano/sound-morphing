@@ -40,6 +40,7 @@ end
 interp_amp = nan(ntrack(indtrack(2)),nframe);
 interp_freq = nan(ntrack(indtrack(2)),nframe);
 
+% Choose amplitude interpolation function
 switch lower(ampFlag)
     
     case 'lin'
@@ -70,11 +71,13 @@ for iframe = 1:nframe
             
             % Interpolate the amplitudes
             if ampS(itrack,iframe)~=0 && ampT(itrack,iframe)~=0
-                % interp_amp(itrack,iframe) = lininterp(ampS(itrack,iframe),ampT(itrack,iframe),alpha);
-                % interp_amp(itrack,iframe) = dbinterp(ampS(itrack,iframe),ampT(itrack,iframe),alpha,'target');
+                
                 interp_amp(itrack,iframe) = ampinterp(ampS(itrack,iframe),ampT(itrack,iframe),alpha,'target');
+                
             else
+                
                 interp_amp(itrack,iframe) = 0;
+                
             end
             
             % TARGET harmonic is missing
@@ -86,11 +89,13 @@ for iframe = 1:nframe
             
             % Interpolate the amplitudes
             if ampS(itrack,iframe)~=0
-                % interp_amp(itrack,iframe) = lininterp(ampS(itrack,iframe),0,alpha);
-                % interp_amp(itrack,iframe) = dbinterp(ampS(itrack,iframe),eps(0),alpha,'target');
+                
                 interp_amp(itrack,iframe) = ampinterp(ampS(itrack,iframe),missamp(ampFlag),alpha,'target');
+                
             else
+                
                 interp_amp(itrack,iframe) = 0;
+                
             end
             
             % SOURCE harmonic is missing
@@ -102,19 +107,20 @@ for iframe = 1:nframe
             
             % Interpolate the amplitudes
             if ampT(itrack,iframe)~=0
-                % interp_amp(itrack,iframe) = lininterp(0,ampT(itrack,iframe),alpha);
-                % interp_amp(itrack,iframe) = dbinterp(eps(0),ampT(itrack,iframe),alpha,'target');
+                
                 interp_amp(itrack,iframe) = ampinterp(missamp(ampFlag),ampT(itrack,iframe),alpha,'source');
+                
             else
+                
                 interp_amp(itrack,iframe) = 0;
+                
             end
             
         else
             
+            % Both are NaN (not synthesized)
             interp_amp(itrack,iframe) = ampS(itrack,iframe);
             interp_freq(itrack,iframe) = freqS(itrack,iframe);
-            % interp_amp(itrack,iframe) = 0;
-            % interp_freq(itrack,iframe) = f0S;
             
         end
         
