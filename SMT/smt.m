@@ -5,7 +5,7 @@ function [sin_harm_morph] = smt(source_path,target_path,morph_factor)
 %   1. When ALPHA=0 M=S and when ALPHA=1 M=T. Intermediate values of ALPHA
 %   generate M between S and T.
 
-% 2019 M Caetano
+% 2019 M Caetano SMT 0.1.1
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SOURCE
@@ -96,14 +96,14 @@ tsm_target = solafs(audio_target,tsm_synth_hopsize,tsm_winsize,'half',Kmax,tsmfa
 % SHORT-TIME FOURIER TRANSFORM
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% winsize = 3*T0
-winsize = max(fix(3*sr_source/ref0_source),fix(3*sr_target/ref0_target));
+% framesize = 3*T0
+framesize = max(fix(3*sr_source/ref0_source),fix(3*sr_target/ref0_target));
 
 % 50% overlap
-hopsize = fix(winsize/2);
+hopsize = fix(framesize/2);
 
 % Size of the FFT
-nfft = 2^nextpow2(winsize);
+nfft = 2^nextpow2(framesize);
 
 % Normalize window during analysis (sum(window)==1) and preserve energy upon resynthesis
 normflag = 1;
@@ -134,8 +134,8 @@ threstotal = 66;
 % sin_harm_morph ANALYSIS SOURCE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [amp_source,freq_source,ph_source,dur_source,dcval_source,cframe_source] = ...
-    sinusoidal_analysis(tsm_source,hopsize,winsize,wintype,nfft,...
-    sr_source,'one',normflag,zphflag,'log',maxnpeak,thresframe,threstotal);
+    sinusoidal_analysis(tsm_source,hopsize,framesize,wintype,nfft,...
+    sr_source,maxnpeak,thresframe,threstotal,'one',normflag,zphflag,'log');
 
 % Number of frames source
 nframe_source = length(cframe_source);
@@ -161,8 +161,8 @@ nframe_source = length(cframe_source);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [amp_target,freq_target,ph_target,dur_target,dcval_target,cframe_target] = ...
-    sinusoidal_analysis(tsm_target,hopsize,winsize,wintype,nfft,...
-    sr_target,'one',normflag,zphflag,'log',maxnpeak,thresframe,threstotal);
+    sinusoidal_analysis(tsm_target,hopsize,framesize,wintype,nfft,...
+    sr_target,maxnpeak,thresframe,threstotal,'one',normflag,zphflag,'log');
 
 % Number of frames
 nframe_target = length(cframe_target);
@@ -207,6 +207,6 @@ sr_morph = 44100;
 
 [sin_harm_morph,part_harm_morph,amp_part_morph,freq_part_morph] = ...
     sinusoidal_resynthesis(amp_harm_morph,freq_harm_morph,ph_harm_morph,...
-    freq_diff_peak_match,hopsize,winsize,wintype,sr_morph,dur_target,cframe_source,'one','PRFI',maxnpeak);
+    freq_diff_peak_match,hopsize,framesize,wintype,sr_morph,dur_target,cframe_source,maxnpeak,'one','PRFI');
 
 end
