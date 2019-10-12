@@ -1,4 +1,6 @@
-function [sinusoidal,partials,amplitudes,frequencies,new_amp,new_freq,new_phase] = sinusoidal_resynthesis_PI(amp,freq,ph,delta,hopsize,framesize,sr,nsample,cframe,cfwflag,maxnpeak,dispflag)
+function [sinusoidal,partials,amplitudes,frequencies,new_amp,new_freq,new_phase] = ...
+    sinusoidal_resynthesis_PI(amp,freq,ph,delta,hopsize,framesize,fs,...
+    nsample,cframe,maxnpeak,cfwflag,dispflag)
 %SINUSOIDAL_RESYNTHESIS_PI Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -56,19 +58,11 @@ new_amp = cell(1,nframe);
 new_freq = cell(1,nframe);
 new_phase = cell(1,nframe);
 
-% new_new_amp = cell(1,nframe);
-% new_new_freq = cell(1,nframe);
-% new_new_phase = cell(1,nframe);
-
 % Preallocate
 sinusoidal = zeros(nsample+2*shift,1);
 partials = zeros(nsample+2*shift,maxnpeak);
 amplitudes = zeros(nsample+2*shift,maxnpeak);
 frequencies = zeros(nsample+2*shift,maxnpeak);
-
-% partials = cell(nframe,1);
-% amplitudes = cell(nframe,1);
-% frequencies = cell(nframe,1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SYNTHESIS BY PARAMETER INTERPOLATION
@@ -89,7 +83,7 @@ for iframe = 1:nframe-1
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         % Parameter interpolation & Additive resynthesis (with linear ph estimation)
-        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(amp{iframe},amp{iframe},freq{iframe},freq{iframe},ph{iframe}-(freq{iframe}*2*pi*lhw(framesize)/sr),ph{iframe},lhw(framesize),sr);
+        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(amp{iframe},amp{iframe},freq{iframe},freq{iframe},ph{iframe}-(freq{iframe}*2*pi*lhw(framesize)/fs),ph{iframe},lhw(framesize),fs);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)-lhw(framesize)+shift:cframe(iframe)-1+shift) = sin_model;
@@ -101,11 +95,11 @@ for iframe = 1:nframe-1
         % FROM CFRAME TO CFRAME+HOPSIZE (RIGHT HALF OF FIRST WINDOW)
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        % [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,sr);
-        [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching_tracks(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,sr);
+        % [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,fs);
+        [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching_tracks(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,fs);
         
         % Parameter interpolation & Additive resynthesis
-        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1},hopsize,sr);
+        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1},hopsize,fs);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)+shift:cframe(iframe+1)-1+shift) = sin_model;
@@ -120,7 +114,7 @@ for iframe = 1:nframe-1
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         % Parameter interpolation & Additive resynthesis (with linear ph estimation)
-        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(amp{iframe},amp{iframe},freq{iframe},freq{iframe},ph{iframe},ph{iframe}+(freq{iframe}*2*pi*(nsample-cframe(iframe)+1)/sr),nsample-cframe(iframe)+1,sr);
+        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(amp{iframe},amp{iframe},freq{iframe},freq{iframe},ph{iframe},ph{iframe}+(freq{iframe}*2*pi*(nsample-cframe(iframe)+1)/fs),nsample-cframe(iframe)+1,fs);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)+shift:nsample+shift) = sin_model;
@@ -135,11 +129,10 @@ for iframe = 1:nframe-1
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
         % Peak matching
-        % [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,sr);
-        [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching_tracks(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,sr);
+        [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1}] = peak_matching_tracks(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},ph{iframe},ph{iframe+1},delta,hopsize,fs);
         
         % Parameter interpolation & Additive resynthesis
-        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1},hopsize,sr);
+        [sin_model,partial_model,amp_model,freq_model] = parameter_interpolation(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase{iframe},new_phase{iframe+1},hopsize,fs);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)+shift:cframe(iframe+1)-1+shift) = sin_model;
@@ -156,12 +149,5 @@ sinusoidal = sinusoidal(1+shift:nsample+shift);
 partials = partials(1+shift:nsample+shift,:);
 amplitudes = amplitudes(1+shift:nsample+shift,:);
 frequencies = frequencies(1+shift:nsample+shift,:);
-
-a = 1;
-
-% % Remove extra partials
-% partials = partials(partials~=0);
-% amplitudes = amplitudes(amplitudes~=0);
-% frequencies = frequencies(frequencies~=0);
 
 end

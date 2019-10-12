@@ -1,4 +1,5 @@
-function [sinusoidal,partials,amplitudes,frequencies] = sinusoidal_resynthesis_PRFI(amp,freq,delta,hopsize,framesize,sr,nsample,cframe,cfwflag,maxnpeak,dispflag)
+function [sinusoidal,partials,amplitudes,frequencies] = sinusoidal_resynthesis_PRFI...
+    (amp,freq,delta,hopsize,framesize,fs,nsample,cframe,maxnpeak,cfwflag,dispflag)
 %SINUSOIDAL_RESYNTHESIS_PI Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -89,7 +90,7 @@ for iframe = 1:nframe-1
         phase_prev{iframe} = zeros(size(amp{iframe}));
         
         % Parameter interpolation & Additive resynthesis (with linear phase estimation)
-        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(zeros(size(amp{iframe})),amp{iframe},freq{iframe},freq{iframe},phase_prev{iframe},lhw(framesize),sr);
+        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(zeros(size(amp{iframe})),amp{iframe},freq{iframe},freq{iframe},phase_prev{iframe},lhw(framesize),fs);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)-lhw(framesize)+shift:cframe(iframe)-1+shift) = sin_model;
@@ -106,7 +107,7 @@ for iframe = 1:nframe-1
         [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase_prev{iframe}] = peak_matching_withoutphase(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},phase_prev{iframe},delta);
         
         % Parameter interpolation & Additive resynthesis
-        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase_prev{iframe},hopsize,sr);
+        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase_prev{iframe},hopsize,fs);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)+shift:cframe(iframe+1)-1+shift) = sin_model;
@@ -127,7 +128,7 @@ for iframe = 1:nframe-1
         
         
         % Parameter interpolation & Additive resynthesis (with linear phase estimation)
-        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(amp{iframe},amp{iframe},freq{iframe},freq{iframe},phase_prev{iframe},nsample-cframe(iframe)+1,sr);
+        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(amp{iframe},amp{iframe},freq{iframe},freq{iframe},phase_prev{iframe},nsample-cframe(iframe)+1,fs);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)+shift:nsample+shift) = sin_model;
@@ -157,7 +158,7 @@ for iframe = 1:nframe-1
         [new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase_prev{iframe}] = peak_matching_withoutphase(amp{iframe},amp{iframe+1},freq{iframe},freq{iframe+1},phase_prev{iframe},delta);
         
         % Parameter interpolation & Additive resynthesis
-        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase_prev{iframe},hopsize,sr);
+        [sin_model,phase,partial_model,amp_model,freq_model] = frequency_integration(new_amp{iframe},new_amp{iframe+1},new_freq{iframe},new_freq{iframe+1},new_phase_prev{iframe},hopsize,fs);
         
         % Concatenation into final synthesis vector
         sinusoidal(cframe(iframe)+shift:cframe(iframe+1)-1+shift) = sin_model;

@@ -1,19 +1,27 @@
-function [amplitude,frequency,phase,nsample,dc,cframe] = sinusoidal_analysis(sig,hopsize,framesize,wintype,nfft,fs,cfwflag,normflag,zphflag,magflag,maxnpeak,thresframe,threstotal,dispflag)
-%SINUSOIDAL_ANALYSIS perform sinusoidal analysis.
-%   [A,F,P,L,DC,C] = SINUSOIDAL_ANALYSIS(S,H,M,WINTYPE,NFFT,FS,CFWFLAG,NORMFLAG,ZPHFLAG,MAGFLAG,MAXNPEAK,THRESFRAME,THRESTOTAL)
+function [amplitude,frequency,phase,nsample,dc,cframe] = ...
+    sinusoidal_analysis(sig,hopsize,framesize,wintype,nfft,fs,maxnpeak,...
+    thresfr,threstot,cfwflag,normflag,zphflag,magflag,dispflag)
+%SINUSOIDAL_ANALYSIS perform sinusoidal analysis [1].
+%   [A,F,P,L,DC,C] = SINUSOIDAL_ANALYSIS(S,H,M,WINTYPE,NFFT,FS,MAXNPEAK,THRESFRAME,THRESTOTAL,CFWFLAG,NORMFLAG,ZPHFLAG,MAGFLAG,DISPFLAG)
 %   splits the input sound S into overlapping frames of length M with a hop
 %   size H and returns the amplitudes A, frequencies F, and phases P of the
-%   partials estimated at the frequencies defined by FREQ.
+%   partials assumed to be the MAXNPEAK peaks with maximum power spectral 
+%   amplitude.
 %
 %   See also SINUSOIDAL_RESYNTHESIS
+% 
+% [1] McAulay and Quatieri (1986) Speech Analysis/Synthesis Based on a 
+% Sinusoidal Representation, IEEE TRANSACTIONS ON ACOUSTICS, SPEECH,
+% AND SIGNAL PROCESSING, VOL. ASSP-34, NO. 4.
 
-% 2016 M Caetano; Revised 2019
+% 2016 M Caetano;
+% Revised 2019 SMT 0.1.1
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CHECK INPUT ARGUMENTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Check number if input arguments
+% Check number of input arguments
 narginchk(13,14);
 
 if nargin == 13
@@ -68,7 +76,7 @@ for iframe = 1:nframe
     
     % Select only peaks with amplitude at most THRESFRAME dB below the maximum amplitude found in the frame
     [amplitude{iframe},frequency{iframe},phase{iframe}] = ...
-        mindb(amplitude{iframe},frequency{iframe},phase{iframe},thresframe);
+        mindb(amplitude{iframe},frequency{iframe},phase{iframe},thresfr);
     
 end
 
@@ -78,7 +86,7 @@ maxlevel = 20*log10(max(cellfun(@max,amplitude)));
 % SELECT PEAKS WITH ABSOLUTE AMPLITUDE HIGHER THAN THRESTOTAL
 for iframe = 1:nframe
     
-    indminfreq = 20*log10(amplitude{iframe}) < -(abs(maxlevel) + abs(threstotal));
+    indminfreq = 20*log10(amplitude{iframe}) < -(abs(maxlevel) + abs(threstot));
     
     if not(isempty(amplitude{iframe}(indminfreq)))
         

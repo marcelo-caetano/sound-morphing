@@ -1,4 +1,7 @@
-function [sinusoidal,partials,amplitudes,phases] = sinusoidal_resynthesis_OLA(amp,freq,phase,hopsize,framesize,wintype,sr,nsample,cframe,cfwflag,dispflag)
+function [sinusoidal,partials,amplitudes,phases] = sinusoidal_resynthesis_OLA...
+    (amp,freq,phase,hopsize,framesize,wintype,fs,nsample,cframe,cfwflag,dispflag)
+%SINUSOIDAL_RESYNTHESIS_PI Summary of this function goes here
+%   Detailed explanation goes here
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CHECK INPUT ARGUMENTS
@@ -35,7 +38,7 @@ for iframe = 1:nframe
     end
     
     [frames(:,iframe),partials{iframe},amplitudes{iframe},phases{iframe}] = ...
-        stationary_synthesis(amp{iframe},freq{iframe},phase{iframe},framesize,sr,wintype,cframe(iframe));
+        stationary_synthesis(amp{iframe},freq{iframe},phase{iframe},framesize,fs,wintype,cframe(iframe));
     
 end
 
@@ -47,5 +50,8 @@ sc = colasum(wintype)*(framesize/2)/hopsize;
 
 % Scale OLA
 sinusoidal = olasin/sc;
+
+% Get frequencies as derivative of phases
+% frequencies = gradient(phases);
 
 end
