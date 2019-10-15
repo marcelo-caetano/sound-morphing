@@ -1,4 +1,4 @@
-function CMMR2019_makefigpeaktrack(freqpeak,timefr,tmin,tmax,freqmin,freqmax,markers,xlbl,ylbl,ttl,ext,savpath)
+function CMMR2019_makefigpeaktrack(freqpeak,timefr,tmin,tmax,freqmin,freqmax,markers,xlbl,ylbl,ttl)
 % xvector,ymatrix,errmatrix,y,t,ref,savpath
 %UNTITLED6 Summary of this function goes here
 %   Detailed explanation goes here
@@ -88,6 +88,6 @@ title(ttl,'FontSize',titlefs,'FontName',font);
 hold(axes1,'off');
 
 % set(figure1,'renderer','painters');
-saveas(figure1,fullfile(savpath{:}),ext);
+% saveas(figure1,fullfile(savpath{:}),ext);
 
 end

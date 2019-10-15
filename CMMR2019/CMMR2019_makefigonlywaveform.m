@@ -1,4 +1,4 @@
-function CMMR2019_makefigonlywaveform(time,waveform,xmin,xmax,ymin,ymax,xlbl,ylbl,ttl,ext,savpath)
+function CMMR2019_makefigonlywaveform(time,waveform,xmin,xmax,ymin,ymax,xlbl,ylbl,ttl)
 
 % https://www.mathworks.com/help/matlab/creating_plots/save-figure-at-specific-size-and-resolution.html
 % https://www.mathworks.com/help/matlab/ref/matlab.ui.figure-properties.html
@@ -94,6 +94,6 @@ set(title1,'FontSize',titlefs,'FontName',font);
 hold(axes1,'off');
 
 % set(figure1,'renderer','painters');
-saveas(figure1,fullfile(savpath{:}),ext);
+% saveas(figure1,fullfile(savpath{:}),ext);
 
 end

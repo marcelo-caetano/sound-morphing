@@ -4,17 +4,17 @@
 % PREAMBLE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Path to save figures
-savfigpath = makepath({'Users','mcaetano','Dropbox','_Articles',...
-    '_MANUSCRIPTS','2019_CMMR','manuscript','img'});
+% % Path to save figures
+% savfigpath = makepath({'Users','mcaetano','Dropbox','_Articles',...
+%     '_MANUSCRIPTS','2019_CMMR','manuscript','img'});
 
-% Path to save sounds
-savsndpath = makepath({'Users','mcaetano','Dropbox','_Articles',...
-    '_MANUSCRIPTS','2019_CMMR','manuscript','audio'});
+% % Path to save sounds
+% savsndpath = makepath({'Users','mcaetano','Dropbox','_Articles',...
+%     '_MANUSCRIPTS','2019_CMMR','manuscript','audio'});
 
-figext = 'pdf';
+% figext = 'pdf';
 
-soundext = 'wav';
+% soundext = 'wav';
 
 % Flag for center of first window
 cflag = {'nhalf','one','half'};
@@ -100,8 +100,7 @@ tmin = ts1(1);
 tmax = ts1(end);
 ampmin = min(sound1);
 ampmax = max(sound1);
-CMMR2019_makefigonlywaveform(ts1,sound1,tmin,tmax,ampmin,ampmax,xlbl,ylbl,...
-    ttl,figext,[savfigpath,{'orig',[fname1 '.' figext]}])
+CMMR2019_makefigonlywaveform(ts1,sound1,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl,figext)
 
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -164,7 +163,7 @@ tmax = ts2(end);
 ampmin = min(sound2);
 ampmax = max(sound2);
 CMMR2019_makefigonlywaveform(ts2,sound2,tmin,tmax,ampmin,ampmax,xlbl,ylbl,...
-    ttl,figext,[savfigpath,{'orig',[fname2 '.' figext]}])
+    ttl,figext)
 
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -213,7 +212,7 @@ tmax = time_samples1(end);
 ampmin = min(tsm1);
 ampmax = max(tsm1);
 CMMR2019_makefigonlywaveform(time_samples1,tsm1,tmin,tmax,ampmin,ampmax,...
-    xlbl,ylbl,ttl,figext,[savfigpath,{'tsm',['source_tsm.' figext]}])
+    xlbl,ylbl,ttl,figext)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TSM TARGET
@@ -237,7 +236,7 @@ tmax = time_samples2(end);
 ampmin = min(tsm2);
 ampmax = max(tsm2);
 CMMR2019_makefigonlywaveform(time_samples2,tsm2,tmin,tmax,ampmin,ampmax,...
-    xlbl,ylbl,ttl,figext,[savfigpath,{'tsm',['target_tsm.' figext]}])
+    xlbl,ylbl,ttl)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRE-PROCESSING
@@ -314,7 +313,7 @@ tmax = time_frame1(end-1);
 freqmin = 0;
 freqmax = 6;
 CMMR2019_makefigonlyspecgram(magspec_tsm1,time_frame1,frequency/1000,tmin,tmax,...
-    freqmin,freqmax,xlbl,ylbl,ttl,figext,[savfigpath,{'orig',['source_tsm_spectrogram.' figext]}])
+    freqmin,freqmax,xlbl,ylbl,ttl)
 
 a=1;
 
@@ -337,7 +336,7 @@ tmin = time_frame2(2);
 freqmin = 0;
 freqmax = 6;
 CMMR2019_makefigonlyspecgram(magspec_tsm2,time_frame2,frequency/1000,tmin,tmax,...
-    freqmin,freqmax,xlbl,ylbl,ttl,figext,[savfigpath,{'orig',['target_tsm_spectrogram.' figext]}])
+    freqmin,freqmax,xlbl,ylbl,ttl)
 
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -381,7 +380,7 @@ tmax = time_frame1(end-1);
 freqmin = 0;
 freqmax = 6;
 CMMR2019_makefigsinspecgram(magspec_tsm1,time_frame1,frequency/1000,freqsin1/1000,...
-    tmin,tmax,freqmin,freqmax,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','analysis',['source_spectral_peak_pos.' figext]}])
+    tmin,tmax,freqmin,freqmax,xlbl,ylbl,ttl)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 3.E) SOURCE SPECTRAL PEAK AMPLITUDE
@@ -396,7 +395,7 @@ tmax = time_frame1(end-1);
 freqmin = 0;
 freqmax = 6;
 CMMR2019_makefigspecpeakgram(magpeak1,time_peak1,freqsin1/1000,tmin,tmax,freqmin,...
-    freqmax,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','analysis',['source_spectral_peak_amp.' figext]}])
+    freqmax,xlbl,ylbl,ttl)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 4.A) SOURCE SPECTRAL PEAK CONTINUATION
@@ -410,7 +409,7 @@ freqmin = 0;
 freqmax = 6;
 markers = 6;
 CMMR2019_makefigpeaktrack(freqsin1/1000,time_frame1,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','partial_track',['source_spectral_peak_cont.' figext]}])
+    markers,xlbl,ylbl,ttl)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 4.C) SOURCE PEAK CONTINUATION (ZOOM)
@@ -424,7 +423,7 @@ freqmin = 0;
 freqmax = 1;
 markers = 10;
 CMMR2019_makefigpeaktrack(freqsin1/1000,time_frame1,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','partial_track',['source_spectral_peak_cont_zoom.' figext]}])
+    markers,xlbl,ylbl,ttl)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PARTIAL TRACKING SOURCE
@@ -444,7 +443,7 @@ freqmin = 0;
 freqmax = 6;
 markers = 6;
 CMMR2019_makefigpeaktrack(freqtrack1/1000,time_frame1,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','partial_track',['source_partial_track.' figext]}])
+    markers,xlbl,ylbl,ttl)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 5.C) SOURCE PARTIAL TRACKS (ZOOM)
@@ -458,7 +457,7 @@ freqmin = 0;
 freqmax = 1;
 markers = 10;
 CMMR2019_makefigpeaktrack(freqtrack1/1000,time_frame1,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','partial_track',['source_partial_track_zoom.' figext]}])
+    markers,xlbl,ylbl,ttl)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % RESYNTHESIS PARTIALS SOURCE
@@ -496,7 +495,7 @@ ampmin = min(min(sinpart1_ph),min(sinpart1_noph));
 ampmax = max(max(sinpart1_ph),max(sinpart1_noph));
 leg = {'Orig Phase','Reconstruct'};
 CMMR2019_makefigsinres(time_samples1,sinpart1_ph,sinpart1_noph,tmin,tmax,ampmin,ampmax,...
-    xlbl,ylbl,ttl,leg,figext,[savfigpath,{'sm','resynth',['source_sin_ph_sin_noph.' figext]}])
+    xlbl,ylbl,ttl,leg)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % HARMONICS SOURCE
@@ -520,7 +519,7 @@ freqmin = 0;
 freqmax = 6;
 markers = 6;
 CMMR2019_makefigpeaktrack(freqharm1/1000,time_frame1,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','harmonics',['source_harmonics.' figext]}])
+    markers,xlbl,ylbl,ttl)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 6.C) SOURCE HARMONICS (ZOOM)
@@ -534,7 +533,7 @@ freqmin = 0;
 freqmax = 1;
 markers = 10;
 CMMR2019_makefigpeaktrack(freqharm1/1000,time_frame1,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','harmonics',['source_harmonics_zoom.' figext]}])
+    markers,xlbl,ylbl,ttl)
 
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -573,7 +572,7 @@ ampmin = min(min(sinh1_ph),min(sinh1_noph));
 ampmax = max(max(sinh1_ph),max(sinh1_noph));
 leg = {'Orig Phase','Reconstruct'};
 CMMR2019_makefigsinres(time_samples1,sinh1_ph,sinh1_noph,tmin,tmax,ampmin,ampmax,...
-    xlbl,ylbl,ttl,leg,figext,[savfigpath,{'sm','resynth',['source_sinh_ph_sinh_noph.' figext]}])
+    xlbl,ylbl,ttl,leg)
 
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -614,7 +613,7 @@ tmax = time_frame2(end-1);
 freqmin = 0;
 freqmax = 6;
 CMMR2019_makefigsinspecgram(magspec_tsm2,time_frame2,frequency/1000,freqsin2/1000,...
-    tmin,tmax,freqmin,freqmax,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','analysis',['target_spectral_peak_pos.' figext]}])
+    tmin,tmax,freqmin,freqmax,xlbl,ylbl,ttl)
 
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -630,7 +629,7 @@ tmax = time_frame2(end-1);
 freqmin = 0;
 freqmax = 6;
 CMMR2019_makefigspecpeakgram(magpeak2,time_peak2,freqsin2/1000,tmin,tmax,freqmin,...
-    freqmax,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','analysis',['target_spectral_peak_amp.' figext]}])
+    freqmax,xlbl,ylbl,ttl)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 4.B) TARGET SPECTRAL PEAK CONTINUATION
@@ -644,7 +643,7 @@ freqmin = 0;
 freqmax = 6;
 markers = 6;
 CMMR2019_makefigpeaktrack(freqsin2/1000,time_frame2,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','partial_track',['target_spectral_peak_cont.' figext]}])
+    markers,xlbl,ylbl,ttl)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 4.D) TARGET PEAK CONTINUATION (ZOOM)
@@ -658,7 +657,7 @@ freqmin = 0;
 freqmax = 1;
 markers = 10;
 CMMR2019_makefigpeaktrack(freqsin2/1000,time_frame2,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','partial_track',['target_spectral_peak_cont_zoom.' figext]}])
+    markers,xlbl,ylbl,ttl)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PARTIAL TRACKING TARGET
@@ -677,7 +676,7 @@ freqmin = 0;
 freqmax = 6;
 markers = 6;
 CMMR2019_makefigpeaktrack(freqtrack2/1000,time_frame2,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','partial_track',['target_partial_track.' figext]}])
+    markers,xlbl,ylbl,ttl)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 5.D) TARGET PARTIAL TRACKS (ZOOM)
@@ -691,7 +690,7 @@ freqmin = 0;
 freqmax = 1;
 markers = 10;
 CMMR2019_makefigpeaktrack(freqtrack2/1000,time_frame2,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','partial_track',['target_partial_track_zoom.' figext]}])
+    markers,xlbl,ylbl,ttl)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % RESYNTHESIS PARTIALS TARGET
@@ -729,7 +728,7 @@ ampmin = min(min(sinpart2_ph),min(sinpart2_noph));
 ampmax = max(max(sinpart2_ph),max(sinpart2_noph));
 leg = {'Orig Phase','Reconstruct'};
 CMMR2019_makefigsinres(time_samples2,sinpart2_ph,sinpart2_noph,tmin,tmax,ampmin,ampmax,...
-    xlbl,ylbl,ttl,leg,figext,[savfigpath,{'sm','resynth',['target_sin_ph_sin_noph.' figext]}])
+    xlbl,ylbl,ttl,leg)
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % HARMONICS TARGET
@@ -753,7 +752,7 @@ freqmin = 0;
 freqmax = 6;
 markers = 6;
 CMMR2019_makefigpeaktrack(freqharm2/1000,time_frame2,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','harmonics',['target_harmonics.' figext]}])
+    markers,xlbl,ylbl,ttl)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 6.D) TARGET HARMONICS (ZOOM)
@@ -767,7 +766,7 @@ freqmin = 0;
 freqmax = 1;
 markers = 10;
 CMMR2019_makefigpeaktrack(freqharm2/1000,time_frame2,tmin,tmax,freqmin,freqmax,...
-    markers,xlbl,ylbl,ttl,figext,[savfigpath,{'sm','harmonics',['target_harmonics_zoom.' figext]}])
+    markers,xlbl,ylbl,ttl)
 
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -806,7 +805,7 @@ ampmin = min(min(sinh2_ph),min(sinh2_noph));
 ampmax = max(max(sinh2_ph),max(sinh2_noph));
 leg = {'Orig Phase','Reconstruct'};
 CMMR2019_makefigsinres(time_samples2,sinh2_ph,sinh2_noph,tmin,tmax,ampmin,ampmax,...
-    xlbl,ylbl,ttl,leg,figext,[savfigpath,{'sm','resynth',['target_sinh_ph_sinh_noph.' figext]}])
+    xlbl,ylbl,ttl,leg)
 
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -835,7 +834,7 @@ tmax = time_frame2(end-1);
 % tmax = 1;
 freqmin = 0;
 freqmax = 6000;
-CMMR2019_makefigspecpeakgram(magpeak,time_peak,interp_freq,tmin,tmax,freqmin,freqmax,xlbl,ylbl,ttl,figext,[savfigpath,{'morph',[fname1 '_' fname2 '_morph_spec.' figext]}])
+CMMR2019_makefigspecpeakgram(magpeak,time_peak,interp_freq,tmin,tmax,freqmin,freqmax,xlbl,ylbl,ttl)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SINUSOIDAL RESYNTHESIS
@@ -855,30 +854,30 @@ tmin = tsmorph(1);
 tmax = tsmorph(end);
 ampmin = min(sinusoidal);
 ampmax = max(sinusoidal);
-CMMR2019_makefigonlywaveform(tsmorph,sinusoidal,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl,figext,[savfigpath,{'morph',[fname1 '_' fname2 '_morph.' figext]}])
+CMMR2019_makefigonlywaveform(tsmorph,sinusoidal,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl,figext)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SAVE AUDIO FILES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Save original source
-audiowrite(fullfile(savsndpath,'orig',[fname1 fext]),sound1,infos1.SampleRate);
-% Save original target
-audiowrite(fullfile(savsndpath,'orig',[fname2 fext]),sound2,infos1.SampleRate);
-
-% Save TSM source
-audiowrite(fullfile(savsndpath,'tsm',[fname1 '_tsm' fext]),tsm1,infos1.SampleRate);
-% Save TSM target
-audiowrite(fullfile(savsndpath,'tsm',[fname2 '_tsm' fext]),tsm2,infos1.SampleRate);
-
-% Save TSM source
-audiowrite(fullfile(savsndpath,'sm',[fname1 '_sinh_ph' fext]),sinh1_ph,infos1.SampleRate);
-audiowrite(fullfile(savsndpath,'sm',[fname2 '_sinh_ph' fext]),sinh2_ph,infos1.SampleRate);
-
-audiowrite(fullfile(savsndpath,'sm',[fname1 '_sinh_noph' fext]),sinh1_noph,infos1.SampleRate);
-audiowrite(fullfile(savsndpath,'sm',[fname2 '_sinh_noph' fext]),sinh2_noph,infos1.SampleRate);
-
-audiowrite(fullfile(savsndpath,'morph',[fname1 '_' fname2 '_morph' fext]),sinusoidal,infos1.SampleRate);
+% % Save original source
+% audiowrite(fullfile(savsndpath,'orig',[fname1 fext]),sound1,infos1.SampleRate);
+% % Save original target
+% audiowrite(fullfile(savsndpath,'orig',[fname2 fext]),sound2,infos1.SampleRate);
+% 
+% % Save TSM source
+% audiowrite(fullfile(savsndpath,'tsm',[fname1 '_tsm' fext]),tsm1,infos1.SampleRate);
+% % Save TSM target
+% audiowrite(fullfile(savsndpath,'tsm',[fname2 '_tsm' fext]),tsm2,infos1.SampleRate);
+% 
+% % Save TSM source
+% audiowrite(fullfile(savsndpath,'sm',[fname1 '_sinh_ph' fext]),sinh1_ph,infos1.SampleRate);
+% audiowrite(fullfile(savsndpath,'sm',[fname2 '_sinh_ph' fext]),sinh2_ph,infos1.SampleRate);
+% 
+% audiowrite(fullfile(savsndpath,'sm',[fname1 '_sinh_noph' fext]),sinh1_noph,infos1.SampleRate);
+% audiowrite(fullfile(savsndpath,'sm',[fname2 '_sinh_noph' fext]),sinh2_noph,infos1.SampleRate);
+% 
+% audiowrite(fullfile(savsndpath,'morph',[fname1 '_' fname2 '_morph' fext]),sinusoidal,infos1.SampleRate);
 
 % sound(sound1,sr)
 % pause(ts1(end)+0.5)
