@@ -14,7 +14,7 @@
 
 % figext = 'pdf';
 
-% soundext = 'wav';
+soundext = 'wav';
 
 % Flag for center of first window
 cflag = {'nhalf','one','half'};
@@ -100,7 +100,7 @@ tmin = ts1(1);
 tmax = ts1(end);
 ampmin = min(sound1);
 ampmax = max(sound1);
-CMMR2019_makefigonlywaveform(ts1,sound1,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl,figext)
+CMMR2019_makefigonlywaveform(ts1,sound1,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl)
 
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,7 +163,7 @@ tmax = ts2(end);
 ampmin = min(sound2);
 ampmax = max(sound2);
 CMMR2019_makefigonlywaveform(ts2,sound2,tmin,tmax,ampmin,ampmax,xlbl,ylbl,...
-    ttl,figext)
+    ttl)
 
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -212,7 +212,7 @@ tmax = time_samples1(end);
 ampmin = min(tsm1);
 ampmax = max(tsm1);
 CMMR2019_makefigonlywaveform(time_samples1,tsm1,tmin,tmax,ampmin,ampmax,...
-    xlbl,ylbl,ttl,figext)
+    xlbl,ylbl,ttl)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TSM TARGET
@@ -294,7 +294,7 @@ a=1;
 % STFT SOURCE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[stft_tsm1,dur,dc,cfr1] = stft(tsm1,hopsize,winl,wintype,cflag{cf},nfft,normflag,zphflag);
+[stft_tsm1,dur,dc,cfr1] = stft(tsm1,hopsize,winl,wintype,nfft,cflag{cf},normflag,zphflag);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 3.A) SOURCE SPECTROGRAM
@@ -321,7 +321,7 @@ a=1;
 % STFT TARGET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[stft_tsm2,dur,dc,cfr2] = stft(tsm2,hopsize,winl,wintype,cflag{cf},nfft,normflag,zphflag);
+[stft_tsm2,dur,dc,cfr2] = stft(tsm2,hopsize,winl,wintype,nfft,cflag{cf},normflag,zphflag);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 3.B) TARGET SPECTROGRAM
@@ -347,7 +347,7 @@ a=1;
 % SINUSOIDAL ANALYSIS SOURCE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [amp1,freq1,ph1,dur1,dc1,cfr1] = sinusoidal_analysis(tsm1,hopsize,winl,wintype,...
-    nfft,infos1.SampleRate,cflag{cf},normflag,zphflag,scaleflag{sf},maxnpeak,thresframe,threstotal);
+    nfft,infos1.SampleRate,maxnpeak,thresframe,threstotal,cflag{cf},normflag,zphflag,scaleflag{sf});
 
 % Number of frames source
 nframe1 = length(cfr1);
@@ -471,7 +471,7 @@ rf = 2;
 
 % Source PI resynthesis partials
 [sinpart1_ph] = sinusoidal_resynthesis(amp1,freq1,ph1,delta,hopsize,winl,...
-    wintype,sr,dur1,cfr1,cflag{cf},rflag{rf},maxnpeak);
+    wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRFI RESYNTHESIS
@@ -481,7 +481,7 @@ rf = 3;
 
 % Source PI resynthesis partials
 [sinpart1_noph] = sinusoidal_resynthesis(amp1,freq1,ph1,delta,hopsize,winl,...
-    wintype,sr,dur1,cfr1,cflag{cf},rflag{rf},maxnpeak);
+    wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 7A) SOURCE PARTIALS & RECONSTRUCTION
@@ -548,7 +548,7 @@ rf = 2;
 
 % Source PI resynthesis harmonics
 [sinh1_ph] = sinusoidal_resynthesis(amph1,freqh1,phaseh1,delta,hopsize,winl,...
-    wintype,sr,dur1,cfr1,cflag{cf},rflag{rf},maxnpeak);
+    wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRFI RESYNTHESIS
@@ -558,7 +558,7 @@ rf = 3;
 
 % Source PI resynthesis harmonics
 [sinh1_noph] = sinusoidal_resynthesis(amph1,freqh1,phaseh1,delta,hopsize,winl,...
-    wintype,sr,dur1,cfr1,cflag{cf},rflag{rf},maxnpeak);
+    wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 7B) SOURCE HARMONICS & RECONSTRUCTION
@@ -580,7 +580,7 @@ a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [amp2,freq2,ph2,dur2,dc2,cfr2] = sinusoidal_analysis(tsm2,hopsize,winl,wintype,...
-    nfft,infos2.SampleRate,cflag{cf},normflag,zphflag,scaleflag{sf},maxnpeak,thresframe,threstotal);
+    nfft,infos2.SampleRate,maxnpeak,thresframe,threstotal,cflag{cf},normflag,zphflag,scaleflag{sf});
 
 % Number of frames
 nframe2 = length(cfr2);
@@ -704,7 +704,7 @@ rf = 2;
 
 % Target PI resynthesis partials
 [sinpart2_ph] = sinusoidal_resynthesis(amp2,freq2,ph2,delta,hopsize,winl,...
-    wintype,sr,dur2,cfr2,cflag{cf},rflag{rf},maxnpeak);
+    wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRFI RESYNTHESIS
@@ -714,7 +714,7 @@ rf = 3;
 
 % Source PI resynthesis partials
 [sinpart2_noph] = sinusoidal_resynthesis(amp2,freq2,ph2,delta,hopsize,winl,...
-    wintype,sr,dur2,cfr2,cflag{cf},rflag{rf},maxnpeak);
+    wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 7B) TARGET PARTIALS & RECONSTRUCTION
@@ -781,7 +781,7 @@ rf = 2;
 
 % Source PI resynthesis harmonics
 [sinh2_ph] = sinusoidal_resynthesis(amph2,freqh2,phaseh2,delta,hopsize,winl,...
-    wintype,sr,dur2,cfr2,cflag{cf},rflag{rf},maxnpeak);
+    wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRFI RESYNTHESIS
@@ -791,7 +791,7 @@ rf = 3;
 
 % Source PI resynthesis harmonics
 [sinh2_noph] = sinusoidal_resynthesis(amph2,freqh2,phaseh2,delta,hopsize,winl,...
-    wintype,sr,dur2,cfr2,cflag{cf},rflag{rf},maxnpeak);
+    wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 a=1;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 7B) TARGET HARMONICS & RECONSTRUCTION
@@ -812,7 +812,7 @@ a=1;
 % INTERPOLATE PARTIALS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[interp_amp,interp_freq] = interp_sin(ampharm1,freqharm1,ref0s1,ntrack1,ampharm2,freqharm2,ref0s2,ntrack2,nframe2,alpha);
+[interp_amp,interp_freq] = interp_sin(ampharm1,freqharm1,ref0s1,ntrack1,ampharm2,freqharm2,ref0s2,ntrack2,nframe2,alpha,'log');
 
 interp_phase = zeros(size(interp_freq));
 
@@ -840,7 +840,7 @@ CMMR2019_makefigspecpeakgram(magpeak,time_peak,interp_freq,tmin,tmax,freqmin,fre
 % SINUSOIDAL RESYNTHESIS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[sinusoidal,partials,amp_partials,freq_partials] = sinusoidal_resynthesis(amph,freqh,phaseh,delta,hopsize,winl,wintype,sr,dur2,cfr1,cflag{cf},rflag{rf},maxnpeak);
+[sinusoidal,partials,amp_partials,freq_partials] = sinusoidal_resynthesis(amph,freqh,phaseh,delta,hopsize,winl,wintype,sr,dur2,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 8.A) MORPH WAVEFORM
@@ -854,7 +854,7 @@ tmin = tsmorph(1);
 tmax = tsmorph(end);
 ampmin = min(sinusoidal);
 ampmax = max(sinusoidal);
-CMMR2019_makefigonlywaveform(tsmorph,sinusoidal,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl,figext)
+CMMR2019_makefigonlywaveform(tsmorph,sinusoidal,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SAVE AUDIO FILES
