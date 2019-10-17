@@ -22,7 +22,7 @@ function [fft_frame,nsample,dc,cframe] = stft(sig,hopsize,framesize,wintype,nfft
 %   calculated with a zero-phase window. ZPH = 1 specifies zero-phase and
 %   ZPH = 0 specifies otherwise.
 
-% 2016 M Caetano; Revised 2019 (SMT 0.1.1)
+% 2016 M Caetano; Revised 2019
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SPLIT INTO OVERLAPPING FRAMES
