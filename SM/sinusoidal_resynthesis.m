@@ -2,7 +2,8 @@ function [sinusoidal,partials,amplitudes,frequencies] = sinusoidal_resynthesis..
     (amp,freq,phase,delta,hopsize,framesize,wintype,fs,nsample,cframe,maxnpeak,...
     cfwflag,synthflag,dispflag)
 %SINUSOIDAL_RESYNTHESIS Resynthesis from the output of sinusoidal analysis [1].
-%   [SIN,PART,AMP,FREQ] = SINUSOIDAL_RESYNTHESIS(A,F,P,DELTA,H,M,WINTYPE,FS,NSAMPLE,CFR,MAXNPEAK,CFWFLAG,SYNTHFLAG,DISPFLAG)
+%   [SIN,PART,AMP,FREQ] = SINUSOIDAL_RESYNTHESIS(A,F,P,DELTA,H,M,WINTYPE,FS,...
+%   NSAMPLE,CFR,MAXNPEAK,CFWFLAG,SYNTHFLAG,DISPFLAG)
 %   resynthesizes the sinusoidal model SIN from the output parameters of
 %   SINUSOIDAL_ANALYSIS (A,F,P), where A=amplitudes, F=frequencies, and
 %   P=phases estimated with a hopsize H and a frame size of M. DELTA
@@ -18,6 +19,14 @@ function [sinusoidal,partials,amplitudes,frequencies] = sinusoidal_resynthesis..
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CHECK INPUT ARGUMENTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+narginchk(13,14);
+
+if nargin == 13
+    
+    dispflag = 's';
+    
+end
 
 % Check number of input arguments
 % if nargin == 13
