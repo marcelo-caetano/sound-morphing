@@ -3,7 +3,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 origs = fullfile('.','audio','Accordion_C#3_f.wav');
-% origs = fullfile(pwd,'MCaetano','Production','sound-morphing','audio','Accordion_C#3_f.wav');
 
 [fpath,fname,fext] = fileparts(origs);
 

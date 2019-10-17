@@ -20,8 +20,7 @@ alpha = 0.5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Path relative to CURREXFILE
-% sourcePath = fullfile('.','audio','Accordion_C#3_f.wav');
-sourcePath = fullfile(pwd,'MCaetano','Production','sound-morphing','audio','Accordion_C#3_f.wav');
+sourcePath = fullfile('.','audio','Accordion_C#3_f.wav');
 
 % Info source sound
 infos1 = audioinfo(listsound{inds1});
@@ -62,8 +61,7 @@ sound(sound1,sr)
 % TARGET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% targetPath = fullfile('.','audio','Tuba_oV_hA_2-120_ff_C3.wav');
-targetPath = fullfile(pwd,'MCaetano','Production','sound-morphing','audio','Tuba_oV_hA_2-120_ff_C3.wav');
+targetPath = fullfile('.','audio','Tuba_oV_hA_2-120_ff_C3.wav');
 
 % Info target sound
 infos2 = audioinfo(listsound{inds2});
