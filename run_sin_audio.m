@@ -3,6 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 origs = fullfile('.','audio','Accordion_C#3_f.wav');
+% origs = fullfile(pwd,'MCaetano','Production','sound-morphing','audio','Accordion_C#3_f.wav');
 
 [fpath,fname,fext] = fileparts(origs);
 
@@ -19,8 +20,8 @@ maxnpeak = 100;
 F0 = 130; % C#3
 
 % Window_size=3*T0
-framesize = fix(3*sr/F0);
-% framesize = 2^nextpow2(fix(3*sr/F0));
+% framesize = fix(3*sr/F0);
+framesize = 2^nextpow2(fix(3*sr/F0));
 
 % 50% overlap
 hopsize = fix(framesize/2);
@@ -37,7 +38,7 @@ zphflag = 1;
 
 % Magnitude spectrum scaling
 magflag = {'nne','lin','log','pow'};
-mf = 4;
+mf = 3;
 
 % Hann analysis window
 wintype = 3;
@@ -46,12 +47,20 @@ wintype = 3;
 winname = whichwin(wintype);
 
 % Flag for center of first window
-cflag = {'nhalf','one','half'};
+cfwflag = {'nhalf','one','half'};
 cf = 3;
+
+% Frame-wise threshold
+% thresfr = inf(1);
+thresfr = 66;
+
+% Global threshold
+% threstot = inf(1);
+threstot = 66;
 
 % Resynthesis flag
 rsflag = {'OLA','PI','PRFI'};
-rf = 2;
+rf = 1;
 
 % Frequency difference for peak matching (Hz)
 delta = 10;
@@ -61,21 +70,20 @@ delta = 10;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [amplitude,frequency,phase,duration,dc,cframe] = sinusoidal_analysis(soundData,...
-    hopsize,framesize,wintype,nfft,sr,maxnpeak,inf(1),inf(1),cflag{cf},normflag,zphflag,magflag{mf});
+    hopsize,framesize,wintype,nfft,sr,maxnpeak,thresfr,threstot,cfwflag{cf},normflag,zphflag,magflag{mf});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SINUSOIDAL RESYNTHESIS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 [sinusoidal,partials,amplitudes,frequencies] = sinusoidal_resynthesis(amplitude,...
-    frequency,phase,delta,hopsize,framesize,wintype,sr,duration,cframe,cflag{cf},rsflag{rf},maxnpeak);
+    frequency,phase,delta,hopsize,framesize,wintype,sr,duration,cframe,maxnpeak,cfwflag{cf},rsflag{rf});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PLOT FIGURE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-N = length(soundData);
-time = (0:N-1)/sr;
+time = gentime(duration,sr);
 
 % Plot Orig vs Sinusoidal
 figure
