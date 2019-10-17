@@ -23,16 +23,16 @@ alpha = 0.5;
 sourcePath = fullfile('.','audio','Accordion_C#3_f.wav');
 
 % Info source sound
-infos1 = audioinfo(listsound{inds1});
+infos1 = audioinfo(sourcePath);
 
 % Load source sound
-[sound1] = audioread(listsound{inds1});
+[sound1] = audioread(sourcePath);
 
 % Downmix from stereo to mono
 sound1 = stereo2mono(sound1);
 
 % Get file name
-[fpath,fname1,fext] = fileparts(listsound{inds1});
+[fpath,fname1,fext] = fileparts(sourcePath);
 
 % Fundamental frequency of source sound
 f0s1 = swipep_mod(sound1,infos1.SampleRate,[75 500],1000/infos1.SampleRate,[],1/20,0.5,0.2);
@@ -64,16 +64,16 @@ sound(sound1,sr)
 targetPath = fullfile('.','audio','Tuba_oV_hA_2-120_ff_C3.wav');
 
 % Info target sound
-infos2 = audioinfo(listsound{inds2});
+infos2 = audioinfo(targetPath);
 
 % Load target sound
-[sound2,sr] = audioread(listsound{inds2});
+[sound2,sr] = audioread(targetPath);
 
 % Downmix from stereo to mono
 sound2 = stereo2mono(sound2);
 
 % Get file name
-[fpath,fname2,fext] = fileparts(listsound{inds2});
+[fpath,fname2,fext] = fileparts(targetPath);
 
 % Fundamental frequency of target sound
 f0s2 = swipep_mod(sound2,infos2.SampleRate,[75 500],1000/infos2.SampleRate,[],1/20,0.5,0.2);
