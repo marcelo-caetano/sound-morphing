@@ -57,6 +57,9 @@ CMMR2019_makefigonlywaveform(ts1,sound1,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl)
 
 % Play source sound
 sound(sound1,sr)
+
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TARGET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -98,6 +101,9 @@ CMMR2019_makefigonlywaveform(ts2,sound2,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl)
 
 % Play target sound
 sound(sound2,sr)
+
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TIME SCALE MODIFICATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -147,6 +153,8 @@ CMMR2019_makefigonlywaveform(time_samples1,tsm1,tmin,tmax,ampmin,ampmax,xlbl,ylb
 % Play TSM source sound
 sound(tsm1,sr)
 
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % TSM TARGET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -173,6 +181,8 @@ CMMR2019_makefigonlywaveform(time_samples2,tsm2,tmin,tmax,ampmin,ampmax,xlbl,ylb
 % Play TSM target sound
 sound(tsm2,sr)
 
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRE-PROCESSING
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -400,8 +410,10 @@ rf = 2;
     wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
 % Play source PI resynthesis partials
-sound(sinpart1,sr)
+sound(sinpart1_ph,sr)
 
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRFI RESYNTHESIS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -415,6 +427,8 @@ rf = 3;
 % Play source PRFI resynthesis partials
 sound(sinpart1_noph,sr)
 
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 7A) SOURCE PARTIALS & RECONSTRUCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -481,6 +495,11 @@ rf = 2;
 [sinh1_ph] = sinusoidal_resynthesis(amph1,freqh1,phaseh1,delta,hopsize,winl,...
     wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
+% Play source PI resynthesis harmonics
+sound(sinh1_ph,sr)
+
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRFI RESYNTHESIS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -491,6 +510,11 @@ rf = 3;
 [sinh1_noph] = sinusoidal_resynthesis(amph1,freqh1,phaseh1,delta,hopsize,winl,...
     wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
+% Play source PRFI resynthesis harmonics
+sound(sinh1_noph,sr)
+
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 7B) SOURCE HARMONICS & RECONSTRUCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -635,6 +659,11 @@ rf = 2;
 [sinpart2_ph] = sinusoidal_resynthesis(amp2,freq2,ph2,delta,hopsize,winl,...
     wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 
+% Play target partials original phase
+sound(sinpart2_ph,sr)
+
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRFI RESYNTHESIS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -645,6 +674,11 @@ rf = 3;
 [sinpart2_noph] = sinusoidal_resynthesis(amp2,freq2,ph2,delta,hopsize,winl,...
     wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 
+% Play target partials phase integration
+sound(sinpart2_noph,sr)
+
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 7B) TARGET PARTIALS & RECONSTRUCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -711,6 +745,11 @@ rf = 2;
 [sinh2_ph] = sinusoidal_resynthesis(amph2,freqh2,phaseh2,delta,hopsize,winl,...
     wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 
+% Play target harmonics original phase
+sound(sinh2_ph,sr)
+
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PRFI RESYNTHESIS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -735,6 +774,11 @@ leg = {'Orig Phase','Reconstruct'};
 CMMR2019_makefigsinres(time_samples2,sinh2_ph,sinh2_noph,tmin,tmax,ampmin,ampmax,...
     xlbl,ylbl,ttl,leg)
 
+% Play target harmonics phase integration
+sound(sinh2_noph,sr)
+
+disp('Strike any key to continue')
+pause
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INTERPOLATE PARTIALS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -781,24 +825,7 @@ ampmax = max(sinusoidal);
 CMMR2019_makefigonlywaveform(tsmorph,sinusoidal,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl)
 
 % Play morph
-sound(tsmorph,sr)
+sound(sinusoidal,sr)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PLAY SOUNDS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-sound(sound2,sr)
-pause(ts2(end)+0.5)
-
-sound(tsm1,sr)
-pause(ts2(end)+0.5)
-
-sound(sinh1,sr)
-pause(ts2(end)+0.5)
-
-sound(tsm2,sr)
-pause(ts2(end)+0.5)
-
-sound(sinh2,sr)
-pause(ts2(end)+0.5)
+disp('Strike any key to continue')
+pause
