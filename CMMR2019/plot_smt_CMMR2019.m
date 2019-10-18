@@ -826,6 +826,3 @@ CMMR2019_makefigonlywaveform(tsmorph,sinusoidal,tmin,tmax,ampmin,ampmax,xlbl,ylb
 
 % Play morph
 sound(sinusoidal,sr)
-
-disp('Strike any key to continue')
-pause
