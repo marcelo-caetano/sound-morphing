@@ -21,6 +21,11 @@ function [addsynth,partials,amplitude,frequency] = parameter_interpolation(amp_c
 %
 %   See also PHASE_INTERP, QUAD_INTERP, PEAK_MATCHING, PEAK_PICKING
 
+% 2019 M Caetano (SMT 0.1.1)
+% [1] McAulay,R.J. and T.F. Quatieri (1986, August). Speech analysis/synthesis
+% based on a sinusoidal representation. IEEE Transactions on Acoustics,
+% Speech, and Signal Processing ASSP-34(4),744-754.
+
 % Number of partials
 npartial = length(amp_curr);
 
@@ -60,8 +65,6 @@ for ipartial = 1:npartial
     % Synthesize partial
     partials(:,ipartial) = 2*amplitude(:,ipartial).*cos(phase(:,ipartial));
     % Synthesis with sine misses the phase offset of the original waveform
-    % partials(:,ipartial) = 2*amplitude(:,ipartial).*sin(phase(:,ipartial));
-    
     
     % Add partial to final synthesis
     addsynth = addsynth + partials(:,ipartial);

@@ -1,6 +1,6 @@
 function [amppart,freqpart,phasepart,npartial] = peak2track(amp,freq,ph,nframe,maxnpeak,nfft,sr,delta,dispflag)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%PEAK2TRACK Convert spectral peaks into partial tracks.
+%   [Ap,Fp,Pp,NPARTIAL] = PEAK2TRACK(A,F,P,NFRAME,MAXNPEAK,NFFT,SR,DELTA,DISPFLAG)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CHECK FUNCTION INPUT
@@ -76,83 +76,15 @@ for iframe = 1:nframe
     
 end
 
-a=1;
-
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % RUN THROUGH ALL BINS AND ELLIMINATE WHENEVER NO FREQUENCY BELONGS TO BIN
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% % Initialize track
-% istrack = false(nbin,1);
-%
-% for ibin = 1:nbin
-%
-%     istrack(ibin) = not(all(isnan(freqbin(ibin,:))));
-%
-% end
-%
-% % Number of tracks
-% ntrack = nnz(istrack);
-%
-% freqtrack = freqbin(istrack,:);
-% amptrack = ampbin(istrack,:);
-% phasetrack = phasebin(istrack,:);
-%
-% % Frequency limit
-% fmin = 000;
-% flim = 4000;
-%
-% % Horizontal lines dividing FFT bins
-% ybin = [cbinfft(istrack)-binfft/2;cbinfft(istrack)-binfft/2];
-% xbin = [ones(1,ntrack);nframe*ones(1,ntrack)];
-%
-% % Vertical lines at center of frames
-% xfr = [(1:nframe);(1:nframe)];
-% yfr = [zeros(1,nframe);flim*ones(1,nframe)];
-%
-% % Plot bins
-% figure
-% plot((1:nframe),freqtrack,'*-')
-% hold on
-% line(xbin,ybin,'LineWidth',1,'LineStyle','-','Color',[0.55 0.55 0.55])
-% line(xfr,yfr,'LineWidth',1,'LineStyle','--','Color',[0.35 0.35 0.35])
-% hold off
-% ylim([fmin flim]);
-
-a=1;
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% MAKE HARMONICS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% % Edge of histogram bins
-% fedge = -binfft/2:binfft:sr/2+binfft/2;
-%
-% % Index of frequenct bin each peak belongs to
-% indbin = discretize(freqpeak,fedge);
-%
-% % Initialize variables
-% freqbin = nan(nbin,nframe);
-% ampbin = nan(nbin,nframe);
-% phasebin = nan(nbin,nframe);
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % PARTIAL TRACKING
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% % Keep track of DEATH, BIRTH, and MATCH
-% % event = cell(nframe-1,1);
-% death = false(ntrack,nframe);
-% birth = false(ntrack,nframe);
-% match = false(ntrack,nframe);
-% emptyTrack = false(ntrack,nframe);
 
 % Keep track of DEATH, BIRTH, and MATCH
 death = false(nbin,nframe);
 birth = false(nbin,nframe);
 match = false(nbin,nframe);
 emptyTrack = false(nbin,nframe);
-
 
 for iframe = 1:nframe-1
     
@@ -162,37 +94,6 @@ for iframe = 1:nframe-1
     
 end
 
-% Whenever a track dies in PARTIAL TRACKING it is reborn in different track
-a=1;
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ELLIMINATE EMPTY TRACKS (ALL NAN)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% % Initialize track
-% istrack = false(nbin,1);
-%
-% for itrack = 1:nbin
-%
-%     istrack(itrack) = not(all(isnan(freqbin(itrack,:))));
-%
-% end
-%
-% % Number of tracks
-% ntrack = nnz(istrack);
-%
-% freqtrack = freqtrack(istrack,:);
-% amptrack = amptrack(istrack,:);
-% phasetrack = phasetrack(istrack,:);
-
-% % Plot partials
-% figure
-% plot((1:nframe),freqtrack,'*-')
-% hold on
-% line(xbin,ybin,'LineWidth',1,'LineStyle','-','Color',[0.55 0.55 0.55])
-% line(xfr,yfr,'LineWidth',1,'LineStyle','--','Color',[0.35 0.35 0.35])
-% hold off
-% ylim([fmin flim]);
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % MERGE PARTIALS BY FREQUENCY
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -200,64 +101,7 @@ a=1;
 % Median frequency of each track
 m = median(freqbin,2,'omitnan');
 
-% Replace if frequencies closer to the median of another track
-
-a=1;
-
-% % Horizontal lines dividing FFT bins
-% xmed = [ones(1,ntrack);nframe*ones(1,ntrack)];
-% ymed = [m,m]';
-
-% % Plot tracks
-% figure
-% plot((1:nframe),freqtrack,'*-')
-% hold on
-% % line(xbin,ybin,'LineWidth',1,'LineStyle','-','Color',[0.55 0.55 0.55])
-% % line(xfr,yfr,'LineWidth',1,'LineStyle','--','Color',[0.35 0.35 0.35])
-% line(xmed,ymed,'LineWidth',2,'LineStyle','-','Color',[0.55 0.55 0.55])
-% hold off
-% ylim([fmin flim]);
-
-% % Plot tracks
-% figure(1)
-% plot((1:nframe),freqtrack(1,:),'y*-')
-% hold on
-% plot((1:nframe),freqtrack(2,:),'k*-')
-% plot((1:nframe),freqtrack(3,:),'g*-')
-% plot((1:nframe),freqtrack(4,:),'b*-')
-% plot((1:nframe),freqtrack(5,:),'m*-')
-% plot((1:nframe),freqtrack(6,:),'c*-')
-% plot((1:nframe),freqtrack(7,:),'r*-')
-% plot((1:nframe),freqtrack(8,:),'yo-')
-% plot((1:nframe),freqtrack(9,:),'ko-')
-% plot((1:nframe),freqtrack(10,:),'go-')
-% plot((1:nframe),freqtrack(11,:),'bo-')
-% plot((1:nframe),freqtrack(12,:),'mo-')
-% plot((1:nframe),freqtrack(13,:),'co-')
-% plot((1:nframe),freqtrack(14,:),'ro-')
-% plot((1:nframe),freqtrack(15,:),'y+-')
-% plot((1:nframe),freqtrack(16,:),'k+-')
-% plot((1:nframe),freqtrack(17,:),'g+-')
-% plot((1:nframe),freqtrack(18,:),'b+-')
-% plot((1:nframe),freqtrack(19,:),'m+-')
-% plot((1:nframe),freqtrack(20,:),'c+-')
-% plot((1:nframe),freqtrack(21,:),'r+-')
-% plot((1:nframe),freqtrack(22,:),'yd-')
-% plot((1:nframe),freqtrack(23,:),'kd-')
-% plot((1:nframe),freqtrack(24,:),'gd-')
-% plot((1:nframe),freqtrack(25,:),'bd-')
-% plot((1:nframe),freqtrack(26,:),'md-')
-% plot((1:nframe),freqtrack(27,:),'cd-')
-% plot((1:nframe),freqtrack(28,:),'rd-')
-% line(xmed,ymed,'LineWidth',2,'LineStyle','-','Color',[0.55 0.55 0.55])
-% hold off
-% ylim([fmin flim]);
-
-a=1;
-
 aux = (1:nbin)';
-% ntrack = nkeep               + nmerge ()
-% ntrack = legth(aux(indkeep)) + length(unique([irep;irep+1]))
 
 % Positions of tracks closer in median frequency than DELTA
 [indrep] = find(abs(diff(m)) < delta);
@@ -267,21 +111,6 @@ posadj = indrep(diff(indrep)==1);
 
 % Indices of tracks kept (not merged)
 indkeep = not(ismember((1:nbin),unique([indrep;indrep+1])));
-
-% Positions of tracks kept
-% poskeep = aux(not(ismember((1:ntrack),unique([indrep;indrep+1]))));
-
-% Indices of trackes merged
-% indmerge = ismember((1:ntrack),unique([indrep;indrep+1]));
-
-% Positions of tracks merged
-% posmerge = aux(ismember((1:ntrack),unique([indrep;indrep+1])));
-
-% Number of merged partials
-% nmerge = length(posmerge);
-
-% Final number of partials
-% npartial = ntrack - length(irep);
 
 % Initialize partial index
 ipart = 1;
@@ -311,8 +140,6 @@ for ibin = 1:nbin
         
     else % merge
         
-        a=1;
-        
         if any(ismember(posadj,ibin))
             
             % Merge 3 tracks
@@ -339,16 +166,12 @@ for ibin = 1:nbin
             
         elseif any(ismember(indrep+1,ibin)) || any(ismember(posadj+1,ibin)) || any(ismember(posadj+2,ibin))
             
-            a=1;
-            
             % This track was merged
             continue
             
         else
             
             % Merge 2 tracks
-            a=1;
-            
             for count = indrep(ismember(indrep,ibin)):indrep(ismember(indrep,ibin))+1
                 
                 % Find indices of frequencies
@@ -370,8 +193,6 @@ for ibin = 1:nbin
     
 end
 
-a=1;
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ELLIMINATE EMPTY TRACKS (ALL NAN)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -391,12 +212,5 @@ npartial = nnz(ispartial);
 freqpart = freqpart(ispartial,:);
 amppart = amppart(ispartial,:);
 phasepart = phasepart(ispartial,:);
-
-% % % Plot partials
-% % figure(2)
-% % plot((1:nframe),freqpart,'*-')
-% % ylim([fmin flim]);
-
-a=1;
 
 end

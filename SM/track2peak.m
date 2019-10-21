@@ -1,6 +1,6 @@
 function [amp,freq,phase] = track2peak(amptrack,freqtrack,phasetrack,nframe)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%UNTITLED Convert frequency track to spectral peak representation.
+%   [A,F,P] = TRACK2PEAK(At,Ft,Pt,NFRAME)
 
 amp = cell(nframe,1);
 freq = cell(nframe,1);
