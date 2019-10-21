@@ -56,7 +56,7 @@ ampmax = max(sound1);
 CMMR2019_makefigonlywaveform(ts1,sound1,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl)
 
 % Play source sound
-sound(sound1,sr)
+sound(sound1,infos1.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -70,7 +70,7 @@ targetPath = fullfile('.','audio','Tuba_oV_hA_2-120_ff_C3.wav');
 infos2 = audioinfo(targetPath);
 
 % Load target sound
-[sound2,sr] = audioread(targetPath);
+[sound2,infos2.SampleRate] = audioread(targetPath);
 
 % Downmix from stereo to mono
 sound2 = stereo2mono(sound2);
@@ -100,7 +100,7 @@ ampmax = max(sound2);
 CMMR2019_makefigonlywaveform(ts2,sound2,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl)
 
 % Play target sound
-sound(sound2,sr)
+sound(sound2,infos2.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -139,7 +139,7 @@ tsm1 = solafs(sound1,shs,M,cflag{cf},Kmax,alpha1);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 2.C) SOURCE TSM
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-time_samples1 = gentime(length(tsm1),sr);
+time_samples1 = gentime(length(tsm1),infos1.SampleRate);
 
 xlbl = {'Time (s)'};
 ylbl = {'Amplitude'};
@@ -151,7 +151,7 @@ ampmax = max(tsm1);
 CMMR2019_makefigonlywaveform(time_samples1,tsm1,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl)
 
 % Play TSM source sound
-sound(tsm1,sr)
+sound(tsm1,infos1.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -168,7 +168,7 @@ tsm2 = solafs(sound2,shs,M,cflag{cf},Kmax,alpha2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 2.D) TARGET TSM
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-time_samples2 = gentime(length(tsm2),sr);
+time_samples2 = gentime(length(tsm2),infos2.SampleRate);
 xlbl = {'Time (s)'};
 ylbl = {'Amplitude'};
 ttl = {'Target TSM'};
@@ -179,7 +179,7 @@ ampmax = max(tsm2);
 CMMR2019_makefigonlywaveform(time_samples2,tsm2,tmin,tmax,ampmin,ampmax,xlbl,ylbl,ttl)
 
 % Play TSM target sound
-sound(tsm2,sr)
+sound(tsm2,infos2.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -242,13 +242,13 @@ threstotal = 66;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Make frequency vector in kHz
-frequency = genfreq(nfft,sr,'pos',true);
+frequency = genfreq(nfft,infos1.SampleRate,'pos',true);
 
 xlbl = {'Time (s)'};
 ylbl = {'Frequency (kHz)'};
 ttl = {'Source Spectrogram'};
 magspec_tsm1 = 20*log10(abs(stft_tsm1(1:nfft/2+1,:)));
-time_frame1 = cfr1/sr;
+time_frame1 = cfr1/infos1.SampleRate;
 tmin = time_frame1(2);
 tmax = time_frame1(end-1);
 freqmin = 0;
@@ -269,7 +269,7 @@ xlbl = {'Time (s)'};
 ylbl = {'Frequency (kHz)'};
 ttl = {'Target Spectrogram'};
 magspec_tsm2 = 20*log10(abs(stft_tsm2(1:nfft/2+1,:)));
-time_frame2 = cfr2/sr;
+time_frame2 = cfr2/infos2.SampleRate;
 tmin = time_frame2(2);
 freqmin = 0;
 freqmax = 6;
@@ -290,7 +290,7 @@ CMMR2019_makefigonlyspecgram(magspec_tsm2,time_frame2,frequency/1000,tmin,tmax,.
 nframe1 = length(cfr1);
 
 % Time vector for source
-time_samples1 = gentime(dur1,sr);
+time_samples1 = gentime(dur1,infos1.SampleRate);
 
 % Initialize
 ampsin1 = nan(maxnpeak,nframe1);
@@ -310,7 +310,7 @@ end
 xlbl = {'Time (s)'};
 ylbl = {'Frequency (kHz)'};
 ttl = {'Source Spectral Peak Position'};
-time_frame1 = cfr1/sr;
+time_frame1 = cfr1/infos1.SampleRate;
 tmin = time_frame1(2);
 tmax = time_frame1(end-1);
 freqmin = 0;
@@ -407,10 +407,10 @@ rf = 2;
 
 % Source PI resynthesis partials
 [sinpart1_ph] = sinusoidal_resynthesis(amp1,freq1,ph1,delta,hopsize,winl,...
-    wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
+    wintype,infos1.SampleRate,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
 % Play source PI resynthesis partials
-sound(sinpart1_ph,sr)
+sound(sinpart1_ph,infos1.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -422,10 +422,10 @@ rf = 3;
 
 % Source PRFI resynthesis partials
 [sinpart1_noph] = sinusoidal_resynthesis(amp1,freq1,ph1,delta,hopsize,winl,...
-    wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
+    wintype,infos1.SampleRate,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
 % Play source PRFI resynthesis partials
-sound(sinpart1_noph,sr)
+sound(sinpart1_noph,infos1.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -493,10 +493,10 @@ rf = 2;
 
 % Source PI resynthesis harmonics
 [sinh1_ph] = sinusoidal_resynthesis(amph1,freqh1,phaseh1,delta,hopsize,winl,...
-    wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
+    wintype,infos1.SampleRate,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
 % Play source PI resynthesis harmonics
-sound(sinh1_ph,sr)
+sound(sinh1_ph,infos1.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -508,10 +508,10 @@ rf = 3;
 
 % Source PI resynthesis harmonics
 [sinh1_noph] = sinusoidal_resynthesis(amph1,freqh1,phaseh1,delta,hopsize,winl,...
-    wintype,sr,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
+    wintype,infos1.SampleRate,dur1,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
 % Play source PRFI resynthesis harmonics
-sound(sinh1_noph,sr)
+sound(sinh1_noph,infos1.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -540,7 +540,7 @@ CMMR2019_makefigsinres(time_samples1,sinh1_ph,sinh1_noph,tmin,tmax,ampmin,ampmax
 nframe2 = length(cfr2);
 
 % Time vector for target
-time_samples2 = gentime(dur2,sr);
+time_samples2 = gentime(dur2,infos2.SampleRate);
 
 % Initialize
 ampsin2 = nan(maxnpeak,nframe2);
@@ -561,7 +561,7 @@ xlbl = {'Time (s)'};
 ylbl = {'Frequency (kHz)'};
 ttl = {'Target Spectral Peak Position'};
 % magspec_tsm2 = 20*log10(abs(stft_tsm2(1:nfft/2+1,:)));
-time_frame2 = cfr2/sr;
+time_frame2 = cfr2/infos2.SampleRate;
 tmin = time_frame2(2);
 tmax = time_frame2(end-1);
 freqmin = 0;
@@ -657,10 +657,10 @@ rf = 2;
 
 % Target PI resynthesis partials
 [sinpart2_ph] = sinusoidal_resynthesis(amp2,freq2,ph2,delta,hopsize,winl,...
-    wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
+    wintype,infos2.SampleRate,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 
 % Play target partials original phase
-sound(sinpart2_ph,sr)
+sound(sinpart2_ph,infos2.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -670,12 +670,12 @@ pause
 % PRFI Resynthesis
 rf = 3;
 
-% Source PI resynthesis partials
+% Target PI resynthesis partials
 [sinpart2_noph] = sinusoidal_resynthesis(amp2,freq2,ph2,delta,hopsize,winl,...
-    wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
+    wintype,infos2.SampleRate,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 
 % Play target partials phase integration
-sound(sinpart2_noph,sr)
+sound(sinpart2_noph,infos2.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -741,12 +741,12 @@ CMMR2019_makefigpeaktrack(freqharm2/1000,time_frame2,tmin,tmax,freqmin,freqmax,.
 % PI Resynthesis
 rf = 2;
 
-% Source PI resynthesis harmonics
+% Target PI resynthesis harmonics
 [sinh2_ph] = sinusoidal_resynthesis(amph2,freqh2,phaseh2,delta,hopsize,winl,...
-    wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
+    wintype,infos2.SampleRate,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 
 % Play target harmonics original phase
-sound(sinh2_ph,sr)
+sound(sinh2_ph,infos2.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -756,9 +756,9 @@ pause
 % PRFI Resynthesis
 rf = 3;
 
-% Source PI resynthesis harmonics
+% Target PI resynthesis harmonics
 [sinh2_noph] = sinusoidal_resynthesis(amph2,freqh2,phaseh2,delta,hopsize,winl,...
-    wintype,sr,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
+    wintype,infos2.SampleRate,dur2,cfr2,maxnpeak,cflag{cf},rflag{rf});
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 7B) TARGET HARMONICS & RECONSTRUCTION
@@ -775,7 +775,7 @@ CMMR2019_makefigsinres(time_samples2,sinh2_ph,sinh2_noph,tmin,tmax,ampmin,ampmax
     xlbl,ylbl,ttl,leg)
 
 % Play target harmonics phase integration
-sound(sinh2_noph,sr)
+sound(sinh2_noph,infos2.SampleRate)
 
 disp('Strike any key to continue')
 pause
@@ -807,6 +807,16 @@ CMMR2019_makefigspecpeakgram(magpeak,time_peak,interp_freq,tmin,tmax,freqmin,fre
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % SINUSOIDAL RESYNTHESIS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+if isequal(infos1.SampleRate,infos2.SampleRate)
+    
+    sr = infos1.SampleRate;
+    
+else
+    
+    sr = 44100;
+    
+end
 
 [sinusoidal,partials,amp_partials,freq_partials] = sinusoidal_resynthesis(amph,freqh,phaseh,delta,hopsize,winl,wintype,sr,dur2,cfr1,maxnpeak,cflag{cf},rflag{rf});
 
