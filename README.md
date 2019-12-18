@@ -14,3 +14,7 @@ The SMT is a set of Matlab functions that implement a sound morphing algorithm f
 ## Dependencies
 
 The file *run_smt_dependencies.txt* lists all file dependencies. All required *.m* files can be found in this SMT repository. However, the SMT also requires the Matlab signal processing toolbox.
+
+## Acknowledgements
+
+This work is financed by National Funds through the Portuguese funding agency, FCT - Fundação para a Ciência e a Tecnologia within grant SFRH/BPD/115685/2016.
