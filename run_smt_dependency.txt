@@ -47,7 +47,7 @@ C:\Users\Marcelo\Documents\_Dev\MATLAB\MCaetano\DSP\SM\xqifft_temp.m
 C:\Users\Marcelo\Documents\_Dev\MATLAB\MCaetano\DSP\SOLA-FS\olafs.m
 C:\Users\Marcelo\Documents\_Dev\MATLAB\MCaetano\DSP\SOLA-FS\soffs.m
 C:\Users\Marcelo\Documents\_Dev\MATLAB\MCaetano\DSP\SOLA-FS\solafs.m
-C:\Users\Marcelo\Documents\_Dev\MATLAB\MCaetano\DSP\STFT\stft.m
+C:\Users\Marcelo\Documents\_Dev\MATLAB\MCaetano\DSP\STFT\smt_stft.m
 C:\Users\Marcelo\Documents\_Dev\MATLAB\MCaetano\DSP\_data\xqifft.mat
 Required MATLAB Toolboxes:
 MATLAB

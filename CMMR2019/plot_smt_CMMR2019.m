@@ -235,7 +235,7 @@ threstotal = 66;
 % STFT SOURCE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[stft_tsm1,dur,dc,cfr1] = stft(tsm1,hopsize,winl,wintype,nfft,cflag{cf},normflag,zphflag);
+[stft_tsm1,dur,dc,cfr1] = smt_stft(tsm1,hopsize,winl,wintype,nfft,cflag{cf},normflag,zphflag);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 3.A) SOURCE SPECTROGRAM
@@ -260,7 +260,7 @@ CMMR2019_makefigonlyspecgram(magspec_tsm1,time_frame1,frequency/1000,tmin,tmax,.
 % STFT TARGET
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-[stft_tsm2,dur,dc,cfr2] = stft(tsm2,hopsize,winl,wintype,nfft,cflag{cf},normflag,zphflag);
+[stft_tsm2,dur,dc,cfr2] = smt_stft(tsm2,hopsize,winl,wintype,nfft,cflag{cf},normflag,zphflag);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIG 3.B) TARGET SPECTROGRAM
