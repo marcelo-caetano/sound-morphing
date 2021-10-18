@@ -1,6 +1,19 @@
 function [s1,s2] = zp2max(s1,s2)
-%ZP2MAX Zeropad to maximum duration
-%   Detailed explanation goes here
+%ZP2MAX Zeropad to maximum duration.
+%   [M1,M2] = ZP2MAX(S1,S2) zero-pads the shorter of S1 and S2 so that both
+%   M1 and M2 have the same number of samples. Both S1 and S2 are converted
+%   to column vectors.
+%
+%   See also FLEXPAD
+
+% 2019 M Caetano (SMT 0.1.1)
+% 2020 MCaetano SMT 0.2.1
+% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+
+
+% Convert to column vector
+s1 = s1(:);
+s2 = s2(:);
 
 % Duration of sound 1
 dur1 = size(s1,1);

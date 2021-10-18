@@ -1,74 +1,62 @@
-function [addsynth,partials,amplitude,frequency] = parameter_interpolation(amp_curr,amp_next,freq_curr,freq_next,phase_curr,phase_next,hopsize,sr)
+function [amplitude,frequency,phase] = parameter_interpolation(amp,freq,ph,hop,fs)
 %PARAMETER_INTERPOLATION Interpolates the parameters of the current frame
 %with the next frame.
 %
-%   [S,T,A,P] = PARAMETER_INTERPOLATION(Ac,An,Fc,Fn,Pc,Pn,T,SR)
+%   [A,F,P] = PARAMETER_INTERPOLATION(Ac,An,Fc,Fn,Pc,Pn,H,SR)
 %   interpolates the parameters of the current and next frames of a
 %   sinusoidal model. The input parameters are:
 %
 %   Ac is the current amplitude and An is the next amplitude.
 %   Fc is the current frequency and Fn is the next frequency.
-%   Pc is the current phase and Pn is the next phase (argument of sinusoid).
-%   T is the period corresponding to the end of the frame.
-%   SR is the sampling rate.
+%   Pc is the current PHASE and Pn is the next PHASE (argument of sinusoid).
+%   H is the hop size corresponding to the advance between frames.
+%   Fs is the sampling rate.
 %
-%   S is the final synthetic signal inside the frame.
-%   T contains the partials that comprise S when summed.
-%   A has the interpolated amplitudes and P the interpolated phases.
+%   A has the interpolated amplitudes, F the interpolated frequencies, and
+%   P the interpolated phases.
 %
 %   Ac and An are linearly interpolated and Pc and Pn are interpolated
 %   cubically.
 %
 %   See also PHASE_INTERP, QUAD_INTERP, PEAK_MATCHING, PEAK_PICKING
-
-% 2019 M Caetano (SMT 0.1.1)
-% [1] McAulay,R.J. and T.F. Quatieri (1986, August). Speech analysis/synthesis
-% based on a sinusoidal representation. IEEE Transactions on Acoustics,
+%
+% [1] McAulay and Quatieri (1986) Speech Analysis/Synthesis Based on a
+% Sinusoidal Representation, IEEE Transactions on Acoustics,
 % Speech, and Signal Processing ASSP-34(4),744-754.
 
-% Number of partials
-npartial = length(amp_curr);
+% 2016 M Caetano
+% Revised 2019 (SM 0.1.1)
+% 2020 MCaetano SMT 0.1.1 (Revised)
+% 2020 MCaetano SMT 0.2.0
+% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
 
-% Samples spanning frame advance (= hop size)
-samples = (0:hopsize-1)';
 
-% Initialize variables
-partials = zeros(hopsize,npartial);
-amplitude = zeros(hopsize,npartial);
-frequency = zeros(hopsize,npartial);
-phase = zeros(hopsize,npartial);
-addsynth = zeros(hopsize,1);
+% Transpose input
+amp = amp';
+freq = freq';
+ph = ph';
 
-for ipartial = 1:npartial
-    
-    % Synthesize linear amplitude
-    amplitude(:,ipartial) = amp_curr(ipartial) + (amp_next(ipartial) - amp_curr(ipartial))*samples/hopsize;
-    
-    % Calculate M (phase interpolation unwrapping)
-    M = round(((phase_curr(ipartial) + freq_curr(ipartial)*2*pi*hopsize/sr - phase_next(ipartial))+(freq_next(ipartial)...
-        - freq_curr(ipartial))*pi*hopsize/sr)/(2*pi));
-    
-    % Calculate alpha
-    alpha = (3/(hopsize^2))*(phase_next(ipartial) - phase_curr(ipartial) - freq_curr(ipartial)*2*pi*hopsize/sr + 2*pi*M)...
-        + (-1/hopsize)*(freq_next(ipartial) - freq_curr(ipartial))*(2*pi/sr);
-    
-    % Calculate beta
-    beta = (-2/(hopsize^3))*(phase_next(ipartial) - phase_curr(ipartial) - freq_curr(ipartial)*2*pi*hopsize/sr + 2*pi*M)...
-        + (1/(hopsize^2))*(freq_next(ipartial) - freq_curr(ipartial))*(2*pi/sr);
-    
-    % Synthesize quadratic frequency
-    frequency(:,ipartial) = freq_curr(ipartial)*2*pi + 2*alpha*(samples) + 3*beta*(samples.^2);
-    
-    % Synthesize cubic phase
-    phase(:,ipartial) = phase_curr(ipartial) + freq_curr(ipartial)*2*pi*samples/sr + alpha*(samples.^2) + beta*(samples.^3);
-    
-    % Synthesize partial
-    partials(:,ipartial) = 2*amplitude(:,ipartial).*cos(phase(:,ipartial));
-    % Synthesis with sine misses the phase offset of the original waveform
-    
-    % Add partial to final synthesis
-    addsynth = addsynth + partials(:,ipartial);
-    
-end
+% Create column vector of time samples
+sample = (0:hop-1)';
+
+% Synthesize linear AMPLITUDE
+% amplitude = amp(:,1) + (amp(:,2) - amp(:,1))*sample/hop;
+amplitude = (1-sample/hop)*amp(1,:) + sample/hop*amp(2,:);
+
+% Calculate PHASE interpolation unwrapping
+% interp_unwrap = round( ((ph(:,1) + 2*pi*freq(:,1)*hop/fs - ph(:,2)) + pi*(freq(:,2) - freq(:,1))*hop/fs)/(2*pi) );
+interp_unwrap = round( ((ph(1,:) - ph(2,:)) + (pi*hop/fs)*(freq(1,:) + freq(2,:)))/(2*pi) );
+
+% Calculate quadratic PHASE coefficient ALPHA
+alpha = (3/hop^2)*( ph(2,:) - ph(1,:) - 2*pi*freq(1,:)*hop/fs + 2*pi*interp_unwrap ) + (-1/hop)*( freq(2,:) - freq(1,:) )*(2*pi/fs);
+
+% Calculate cubic PHASE coefficient BETA
+beta = (-2/(hop^3))*(ph(2,:)-ph(1,:)-2*pi*freq(1,:)*hop/fs+2*pi*interp_unwrap) + (1/(hop^2))*(freq(2,:)-freq(1,:))*(2*pi/fs);
+
+% Synthesize quadratic frequency
+frequency = 2*pi*repmat(freq(1,:),hop,1) + 2*sample*alpha + 3*(sample.^2)*beta;
+
+% Synthesize cubic PHASE
+phase = repmat(ph(1,:),hop,1) + 2*pi*sample*freq(1,:)/fs + (sample.^2)*alpha + (sample.^3)*beta;
 
 end

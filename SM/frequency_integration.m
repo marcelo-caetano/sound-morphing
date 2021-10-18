@@ -1,58 +1,56 @@
-function [addsynth,phase,partials,amplitude,frequency] = frequency_integration(amp_curr,amp_next,freq_curr,freq_next,phase_prev,hopsize,sr)
-%PARAMETER_INTERPOLATION Interpolates the parameters of the current frame
-%with the next frame.
+function [amplitude,frequency,phase] = frequency_integration(amp,freq,ph_prev,hop,fs)
+%FREQUENCY_INTEGRATION Integrates the FREQUENCY of the current frame
+%with the next frame into a time-varying PHASE track.
 %
-%   [S,P,H,A,F] = FREQUENCY_INTEGRATION(Ac,An,Fc,Fn,Pp,T,SR)
-%   interpolates the parameters of the current and next frames of a
-%   sinusoidal model. The input parameters are:
+%   [S,PH,PART,A,F] = FREQUENCY_INTEGRATION(Ac,An,Fc,Fn,Pp,T,SR)
+%   integrates the frequencies of the current and next frames of a
+%   sinusoidal model into a time-varying PHASE track. The input parameters are:
 %
-%   Ac is the current amplitude and An is the next amplitude.
-%   Fc is the current frequency and Fn is the next frequency.
-%   Pp is the last phase value (argument of sinusoid) of the previous frame.
-%   T is the time elapsed between the center pf the previous frame and the
-%   center of the current frame (i.e., the frame advance or hopsize).
+%   Ac is the current AMPLITUDE and An is the next AMPLITUDE.
+%   Fc is the current FREQUENCY and Fn is the next FREQUENCY.
+%   Pp is the last PHASE value (argument of sinusoid) of the previous frame.
+%   T is the time elapsed between the causalflag pf the previous frame and the
+%   causalflag of the current frame (i.e., the frame advance or hop).
 %   SR is the sampling rate.
 %
 %   S is the final synthetic signal over T.
-%   P has the phase integrated over T.
-%   H contains the partials that comprise S when summed.
+%   P has the PHASE integrated over T.
+%   PART contains the PARTIALS that comprise S when summed.
 %   A has the amplitudes linearly interpolated over T.
 %   F the frequencies linearly interpolated over T.
 %
 %
 %   See also PHASE_INTERP, QUAD_INTERP, PEAK_MATCHING, PEAK_PICKING
+%
+%   [1] McAulay,R., Quatieri,T. (1984) Magnitude-only reconstruction using
+%   a sinusoidal speech model. Proc. ICASSP. vol. 9, pp. 441-444.
 
-% Number of partials
-npartial = length(amp_curr);
+% 2016 M Caetano
+% 2019 MCaetano SMT 0.1.0 (Revised)
+% 2020 MCaetano SMT 0.2.0
+% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+
+
+% Transpose input
+amp = amp';
+freq = freq';
+ph = ph_prev';
 
 % Samples spanning frame advance (= hop size)
-samples = (0:hopsize-1)';
+sample = (0:hop-1)';
 
-% Initialize variables
-partials = zeros(hopsize,npartial);
-amplitude = zeros(hopsize,npartial);
-frequency = zeros(hopsize,npartial);
-phase = zeros(hopsize,npartial);
-addsynth = zeros(hopsize,1);
+% Linear interpolation of amplitude
+% amplitude = amp(:,1) + (amp(:,2) - amp(:,1))*sample/hop;
+amplitude = (1-sample/hop)*amp(1,:) + sample/hop*amp(2,:);
 
-for ipartial = 1:npartial
-    
-    % Linear interpolation of amplitude
-    amplitude(:,ipartial) = amp_curr(ipartial) + (amp_next(ipartial) - amp_curr(ipartial))*samples/hopsize;
-    
-    % Linear interpolation of frequency
-    frequency(:,ipartial) = freq_curr(ipartial) + (freq_next(ipartial) - freq_curr(ipartial))*samples/hopsize;
-    
-    % Synthesize phase
-    phase(:,ipartial) = phase_prev(ipartial) + cumsum(2*pi*frequency(:,ipartial)/sr);
-    
-    % Synthesize partial
-    % partials(:,ipartial) = 2*amplitude(:,ipartial).*cos(phase(:,ipartial));
-    partials(:,ipartial) = 2*amplitude(:,ipartial).*sin(phase(:,ipartial));
-    
-    % Add partial to final synthesis
-    addsynth = addsynth + partials(:,ipartial);
-    
-end
+% Linear interpolation of frequency
+% frequency = freq(:,1) + (freq(:,2) - freq(:,1))*sample/hop;
+frequency = (1-sample/hop)*freq(1,:) + sample/hop*freq(2,:);
+
+% Integrate frequency to synthesize phase
+int_freq = cumsum(2*pi*frequency/fs,1,'omitnan');
+
+% Synthesize phase
+phase = sum(cat(3,repmat(ph,hop,1),int_freq),3,'omitnan');
 
 end

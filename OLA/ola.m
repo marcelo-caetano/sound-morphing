@@ -1,15 +1,20 @@
-function [olasig,olawin] = ola(frames,duration,wintype,center,cframe)
-%OLA Overlap-Add columns of FRAMES by WINSIZE - HOPSIZE.
+function [olasynth,olawin] = ola(time_frame,framelen,hop,nsample,center_frame,nframe,winflag,causalflag)
+%OLA Overlap-Add time frames to resynthesize waveform.
+%   SYNTH = OLA(FR,M,H,NSAMPLE,CFR,NFRAME,WINFLAG,CAUSALFLAG) overlap-adds
+%   the time frames FR by M - H, where M is the frame length and H is the
+%   hop size used to make the time frames and returns SYNTH.
 %
-%   [OLAS] = OLA(FR,L,WINTYPE,CENTER,CFR) overlap-adds the frames FR by M -
-%   H, where M is the length of the WINTYPE window and H is the hop size
-%   used to make the frames.
+%   NSAMPLE is the length of the original signal in samples. NSAMPLE is
+%   usually different than CENTERWIN+(NFRAME-1)*H because the last frame is
+%   always zero-padded to M. Therefore, SYNTH must be truncated to NSAMPLE
+%   to recover the original signal length.
 %
-%   L is the length of the original signal in samples. L is usually
-%   different than CFW+(NFRAME-1)*H because the last frame is zero-padded
-%   to M.
-% 
-%   WINDOW_TYPE is a numeric flag that specifies the following windows
+%   CFR is an array with the samples corresponding to the center of the
+%   frames.
+%
+%   NFRAME is the number of time frames FR. FR is size NSAMPLE x NFRAME.
+%
+%   WINFLAG is a numeric flag that specifies the following windows
 %
 %   1 - Rectangular
 %   2 - Bartlett
@@ -19,85 +24,94 @@ function [olasig,olawin] = ola(frames,duration,wintype,center,cframe)
 %   6 - Blackman-Harris
 %   7 - Hamming
 %
-%   CENTER is a flag that determines the center of the first analysis window
-%   CENTER can be 'ONE', 'HALF', or 'NHALF'. The sample CFW corresponding
-%   to the center of the first window is obtained as CFW = cfw(M,CENTER).
+%   CAUSALFLAG is a character flag that determines the causality of the
+%   window. CAUSALFLAG can be 'ANTI', 'NON', or 'CAUSAL' for anti-causal,
+%   non-causal, or causal respectively. The sample CENTERWIN corresponding
+%   to the center of the first window is obtained as
+%   CENTERWIN = tools.dsp.centerwin(M,CAUSALFLAG). Type help
+%   tools.dsp.centerwin for further details.
 %
-%   CFRAME is a vector with the positions of the center of the frames.
+%   [SYNTH,OLAWIN] = OLA(...) also returns the overlap-added window OLAWIN
+%   specified by WINFLAG.
 %
-%   [OLAS,OLAW] = OLA(...) also returns the overlap-added window OLAW
-%   specified by WINTYPE.
+%   See also SOF
 
-% M Caetano
+% 2016 M Caetano
+% 2020 MCaetano SMT 0.1.1 (Revised)
+% 2020 MCaetano SMT 0.2.0% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
 
-% Window size
-winlen = size(frames,1);
 
-% Hop size
-hopsize = cframe(2)-cframe(1);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHECK INPUT ARGUMENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Ensure CFRAME is a vector array
-if size(cframe,2)==1
-    cframe = cframe';
+% Check number if input arguments
+narginchk(8,8);
+
+% Check number if output arguments
+nargoutchk(0,2);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FUNCTION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Ensure CENTER_FRAME is a column vector
+if size(center_frame,1) == 1
+    center_frame = center_frame';
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ZERO-PADDING AT THE BEGINNING AND END OF SIGNAL
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-switch lower(center)
+if ~isequal(length(center_frame),nframe)
     
-    case 'one'
-        
-        % SHIFT is the number of zeros before CW
-        shift = lhw(winlen);
-        
-    case 'half'
-
-        % SHIFT is the number of zeros before CW
-        shift = 0;
-        
-    case 'nhalf'
-
-        % SHIFT is the number of zeros before CW
-        shift = winlen;
-        
-    otherwise
-        
-        warning(['InvalidFlag: Flag that specifies the center of the first analysis window must be ONE, HALF, or NHALF.\n'...
-            'Using default value ONE']);
-        
-        % SHIFT is the number of zeros before CW
-        shift = lhw(winlen);
-        
+    warning('SMT:OLA:WrongArrayDim',['Wrong number of frames.\n'...
+        'Input number of frames was %d.\n'...
+        'Length of CFR is %d.\n'...
+        'Using NFRAME = LENGTH(CFR)'],nframe,length(center_frame));
+    
+    nframe = length(center_frame);
+    
 end
+
+% Number of channels/partials
+nchannel = size(time_frame,3);
+
+% Zero-padding at start and end for frame-based processing
+shift = tools.dsp.causal_zeropad(framelen,causalflag);
 
 % Preallocate with zero-padding
-olasig = zeros(duration+2*shift,1);
-olawin = zeros(duration+2*shift,1);
+olasynth = zeros(nsample+2*shift,nchannel);
+olawin = zeros(nsample+2*shift,nchannel);
 
 % Make synthesis window
-synthesis_window = gencolawin(winlen,wintype);
+synthesis_window = tools.ola.mkcolawin(framelen,winflag);
+
+% Center of first window
+center_win = tools.dsp.centerwin(framelen,causalflag);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % OVERLAP-ADD PROCEDURE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-for cf = cframe
+for cf = center_frame'
     
     % Frame number
-    iframe = s2f(cf,cfw(winlen,center),hopsize);
+    iframe = tools.dsp.sample2frame(cf,center_win,hop);
     
-    % olasig(cf:cf+winlen-1) = olasig(cf:cf+winlen-1) + frames(:,framenumber);
-    olasig(cf-lhw(winlen)+shift:cf+rhw(winlen)+shift) = olasig(cf-lhw(winlen)+shift:cf+rhw(winlen)+shift) + frames(:,iframe);
+    fprintf(1,'Frame %d\n',iframe);
     
-    % olawin(cf:cf+winlen-1) = olawin(cf:cf+winlen-1) + synthesis_window;
-    olawin(cf-lhw(winlen)+shift:cf+rhw(winlen)+shift) = olawin(cf-lhw(winlen)+shift:cf+rhw(winlen)+shift) + synthesis_window;
+    % Overlap-Add TIME_FRAME
+    olasynth(cf-tools.dsp.leftwin(framelen)+shift:cf+tools.dsp.rightwin(framelen)+shift,:) = ...
+        olasynth(cf-tools.dsp.leftwin(framelen)+shift:cf+tools.dsp.rightwin(framelen)+shift,:) + ...
+        squeeze(time_frame(:,iframe,:));
+    
+    % Overlap-Add SYNTHESIS_WINDOW
+    olawin(cf-tools.dsp.leftwin(framelen)+shift:cf+tools.dsp.rightwin(framelen)+shift,:) = ...
+        olawin(cf-tools.dsp.leftwin(framelen)+shift:cf+tools.dsp.rightwin(framelen)+shift,:) + ...
+        repmat(synthesis_window,1,nchannel);
     
 end
 
 % Remove zero-padding
-olasig = olasig(1+shift:duration+shift);
-olawin = olawin(1+shift:duration+shift);
+olasynth = olasynth(1+shift:nsample+shift,:);
+olawin = olawin(1+shift:nsample+shift,:);
 
 end

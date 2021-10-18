@@ -1,9 +1,9 @@
-function [frames,nsample,dc,cframe] = sof(sig,hopsize,framesize,wintype,cfwflag,normflag)
-%SOF    Split into overlapping frames
-%   [FR] = SOF(S,H,M,WINTYPE,CFWFLAG,NORMWIN) splits the input S into
-%   overlapping frames of length M with a hop size H and returns the frames FR.
+function [time_frame,center_frame,nsample,nframe,nchannel,dc] = sof(wav,framelen,hop,winflag,causalflag,normflag)
+%SOF Split into overlapping frames.
+%   FR = SOF(S,M,H,WINFLAG,CAUSALFLAG,NORMFLAG) splits the input S into
+%   overlapping frames FR of length M with a hop size H.
 %
-%   WINTYPE is a numeric flag that specifies the following windows
+%   WINFLAG is a numeric flag that specifies the following windows
 %
 %   1 - Rectangular
 %   2 - Bartlett
@@ -13,68 +13,80 @@ function [frames,nsample,dc,cframe] = sof(sig,hopsize,framesize,wintype,cfwflag,
 %   6 - Blackman-Harris
 %   7 - Hamming
 %
-%   CFWFLAG is a flag that determines the center of the first analysis window
-%   CFWFLAG can be 'ONE', 'HALF', or 'NHALF'. The sample CFW corresponding
-%   to the center of the first window is obtained as CFW = cfw(M,CFWFLAG).
+%   CAUSALFLAG is a character flag that determines the causality of the
+%   window. CAUSALFLAG can be 'ANTI', 'NON', or 'CAUSAL' for anti-causal,
+%   non-causal, or causal respectively. The sample CENTERWIN corresponding
+%   to the center of the first window is obtained as
+%   CENTERWIN = tools.dsp.centerwin(M,CAUSALFLAG).
 %
-%   NORMFLAG is a flag that specifies if the window is normalized as
-%   normw(n)=w(n)/sum(w(n)). NORMFLAG is TRUE or FALSE.
+%   NORMFLAG is a boolean that specifies if the window is normalized as
+%   normw(n)=w(n)/sum(w(n)). NORMFLAG = TRUE normalizes and FALSE does not.
 %
-%   [FR,L,DC,CFR] = SOF(...) also returns the original length L of S (in samples),
-%   the dc value DC of S, and the vector CFR with the samples corresponding
-%   to the cfwflag of the frames FR.
+%   [FR,CFR,NSAMPLE,NFRAME,NCHANNEL,DC] = SOF(...) also returns the vector
+%   CFR with the samples corresponding to the center of the time frames FR,
+%   the original number of time samples NSAMPLE of S, the number of frames
+%   NFRAME, the number of channels NCHANNEL, AND the dc value DC of S.
 %
 %   See also OLA
 
-% 2016 M Caetano: Revised 2019
+% 2016 M Caetano
+% 2019 MCaetano (Revised)
+% 2020 MCaetano SMT 0.1.1 (Revised)
+% 2021 M Caetano SMT (Revised for stereo)
+% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% CHECK FUNCTION CALL
+% CHECK ARGUMENTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Check number of input arguments
 narginchk(6,6);
 
 % Check number of output arguments
-nargoutchk(1,4);
+nargoutchk(0,6);
+
+%TODO: CHECK INPUTS (CLASS/VALUE/NAN)
+%TODO: HANDLE STEREO SOUNDS
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% FUNCTION BODY
+% FUNCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Make SIG column vector
-sig = sig(:);
-
-% Get NSAMPLE
-nsample = size(sig,1);
+% Get NSAMPLE and NCHANNEL
+[nsample,nchannel] = size(wav);
 
 % Prepare SOF
-[analysis_window,dc,nframe,cframe] = sofprep(nsample,framesize,hopsize,cfwflag,wintype,normflag);
+[analysis_window,dc,nframe,center_frame] = sofprep(nsample,framelen,hop,causalflag,winflag,normflag);
 
 % Execute SOF
-[frames] = sofexe(sig,nsample,analysis_window,framesize,cframe,nframe);
+[time_frame] = sofexe(wav,nsample,analysis_window,framelen,center_frame,nframe,nchannel);
 
 end
 
-% FUNCTION THAT PREPARES SOF
-function [analysis_window,dc,nframe,cframe] = sofprep(nsample,framesize,hopsize,cfwflag,wintype,normflag)
+% LOCAL FUNCTION THAT PREPARES SOF
+function [analysis_window,dc,nframe,center_frame] = sofprep(nsample,framelen,hop,causalflag,winflag,normflag)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CHECK WINDOW OVERLAP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Number of overlapping samples
-noverlap = framesize - hopsize;
+noverlap = framelen - hop;
 
-%hopsize == framesize
+%hop == framelen
 if noverlap == 0
     
-    warning('AdjacentFrames: Frames are adjancent. Frames do not overlap. Typically, consecutive frames overlap by 50%.')
+    warning('SMT:SOF:AdjacentFrames',...
+        ['Frames are adjacent.\nFrames do not overlap.\n'...
+        'Typically, consecutive time frames overlap by 50%.']);
     
-    %hopsize > framesize
+    %hop > framelen
 elseif noverlap < 0
     
-    warning(['NonOverlappingFrames: Frames do not overlap. There is a gap of ' num2str(abs(noverlap)) ' samples between consecutive frames.'])
+    warning('SMT:SOF:NonOverlappingFrames',['Frames do not overlap.\n'...
+        'There is a gap of %d samples between consecutive time frames.'],...
+        abs(noverlap));
     
 end
 
@@ -83,58 +95,65 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Make analysis window
-analysis_window = gencolawin(framesize,wintype);
+analysis_window = tools.ola.mkcolawin(framelen,winflag);
+
+% Window normalization factor
+normwin = sum(analysis_window);
 
 % Normalize analysis window energy
 if normflag
     % sum(ANALYSIS_WINDOW) = 1
-    dc = sum(analysis_window);
-    analysis_window = analysis_window/dc;
+    analysis_window = analysis_window/normwin;
+    dc = 1;
 else
     % No normalization
-    dc = 1;
+    dc = normwin;
 end
 
-% Number of frames
-nframe = nframes(nsample,framesize,hopsize,cfwflag);
+% Number of time_frame
+nframe = tools.dsp.numframe(nsample,framelen,hop,causalflag);
+
+% Position of the center of the first window in samples (signal reference)
+cfwin = tools.dsp.centerwin(framelen,causalflag);
 
 % Center of each frame in signal reference
-cframe = f2s(1:nframe,cfw(framesize,cfwflag),hopsize);
+center_frame = tools.dsp.frame2sample(1:nframe,cfwin,hop);
 
 end
 
-% FUNCTION THAT EXECUTES SOF
-function [windowed_frames,nsample,cframe] = sofexe(sig,nsample,analysis_window,framesize,cframe,nframe)
+% LOCAL FUNCTION THAT EXECUTES SOF
+function [windowed_frames,nsample,center_frame] = sofexe(wav,nsample,analysis_window,framelen,center_frame,nframe,nchannel)
 
-% Initialize the matrix FRAMES that will hold the signal frames
-frames = zeros(framesize,nframe);
+% Initialize the matrix FRAMES that will hold the time frames
+time_frame = zeros(framelen,nframe,nchannel);
 
 % Initialize WINDOWED_FRAMES
-windowed_frames = zeros(framesize,nframe);
+windowed_frames = zeros(framelen,nframe,nchannel);
 
 % For each frame
 for iframe = 1:nframe
     
     % Make each frame
-    frames(:,iframe) = makeframe(sig,cframe(iframe),framesize,nsample);
+    time_frame(:,iframe,:) = mkframe(wav,center_frame(iframe),framelen,nsample,nchannel);
     
     % Perform windowing
-    windowed_frames(:,iframe) = analysis_window.*frames(:,iframe);
+    windowed_frames(:,iframe,:) = analysis_window.*time_frame(:,iframe,:);
     
 end
 
 end
 
-% FUNCTION THAT MAKES EACH FRAME
-function frame = makeframe(sig,cf,framesize,nsample)
+% LOCAL FUNCTION THAT MAKES EACH FRAME
+function frame = mkframe(wav,cf,framelen,nsample,nchannel)
 
-frame = zeros(framesize,1);
+% Initialize frame
+frame = zeros(framelen,nchannel);
 
 % First half window (right of CW)
-fhw = rhw(framesize);
+fhw = tools.dsp.rightwin(framelen);
 
 % Second half window (left of CW)
-shw = lhw(framesize);
+shw = tools.dsp.leftwin(framelen);
 
 if cf < 1
     
@@ -142,7 +161,7 @@ if cf < 1
     
     if up_bound >= 1
         
-        frame(framesize-(up_bound-1):framesize) = sig(1:up_bound);
+        frame(framelen-(up_bound-1):framelen,:) = wav(1:up_bound,:);
         
     end
     
@@ -152,29 +171,29 @@ elseif cf > nsample
     
     if low_bound <= nsample
         
-        frame(1:nsample-(low_bound-1)) = sig(low_bound:nsample);
+        frame(1:nsample-(low_bound-1),:) = wav(low_bound:nsample,:);
         
     end
     
 else
     
     % Sample position of lower window bound in signal reference
-    low_bound = max(1,cf - shw);
+    low_bound = max(1,cf-shw);
     
     % Sample position of upper window bound in signal reference
-    up_bound = min(nsample,cf + fhw);
+    up_bound = min(nsample,cf+fhw);
     
     if cf - shw < 1
         
-        frame(framesize-(up_bound-low_bound):framesize) = sig(low_bound:up_bound);
+        frame(framelen-(up_bound-low_bound):framelen,:) = wav(low_bound:up_bound,:);
         
     elseif cf + fhw > nsample
         
-        frame(1:(up_bound-low_bound)+1) = sig(low_bound:up_bound);
+        frame(1:(up_bound-low_bound)+1,:) = wav(low_bound:up_bound,:);
         
     else
         
-        frame(1:framesize) = sig(low_bound:up_bound);
+        frame(1:framelen,:) = wav(low_bound:up_bound,:);
         
     end
     

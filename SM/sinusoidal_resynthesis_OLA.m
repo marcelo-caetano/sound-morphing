@@ -1,18 +1,33 @@
-function [sinusoidal,partials,amplitudes,phases] = sinusoidal_resynthesis_OLA...
-    (amp,freq,phase,hopsize,framesize,wintype,fs,nsample,cframe,cfwflag,dispflag)
-%SINUSOIDAL_RESYNTHESIS_PI Summary of this function goes here
-%   Detailed explanation goes here
+function [sinusoidal,partial,amplitude,frequency,phase] = sinusoidal_resynthesis_OLA(amp,freq,ph,framelen,hop,fs,nsample,center_frame,...
+    npartial,nframe,winflag,causalflag,dispflag)
+%SINUSOIDAL_RESYNTHESIS_OLA Overlap-add resynthesis for sinusoidal analysis.
+%   [SIN,PART,AMP,FREQ,PH] = SINUSOIDAL_RESYNTHESIS_OLA(A,F,P,M,H,Fs,NSAMPLE,CFR,WINFLAG,CAUSALFLAG,DISPFLAG)
+%   resynthesizes the frames resulting from the sinusoidal analysis via
+%   overlap-add and returns the result in SIN. PART has the partials, AMP
+%   has the amplitudes, FREQ has the frequencies, and PH has the phases of
+%   the partials individually.
+%
+%   See also SINUSOIDAL_RESYNTHESIS_PI, SINUSOIDAL_RESYNTHESIS_PRFI
+
+% 2016 M Caetano;
+% Revised 2019 SMT 0.1.1
+% 2020 MCaetano SMT 0.2.0
+% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CHECK INPUT ARGUMENTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Check number if input arguments
-narginchk(10,11);
+narginchk(12,13);
 
-if nargin == 10
+% Check number if output arguments
+nargoutchk(0,5);
+
+if nargin == 12
     
-    dispflag = 's';
+    dispflag = false;
     
 end
 
@@ -20,38 +35,45 @@ end
 % FUNCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Number of frames
-nframe = length(cframe);
-
 % Initialize variables
-frames = zeros(framesize,nframe);
-partials = cell(nframe,1);
-amplitudes = cell(nframe,1);
-phases = cell(nframe,1);
+time_frame = zeros(framelen,nframe);
+partial_frame = zeros(framelen,nframe,npartial);
+amplitude_frame = zeros(framelen,nframe,npartial);
+frequency_frame = zeros(framelen,nframe,npartial);
+phase_frame = zeros(framelen,nframe,npartial);
 
 for iframe = 1:nframe
     
-    if strcmpi(dispflag,'v')
+    if dispflag
         
         fprintf(1,'OLA synthesis frame %d of %d\n',iframe,nframe);
         
     end
     
-    [frames(:,iframe),partials{iframe},amplitudes{iframe},phases{iframe}] = ...
-        stationary_synthesis(amp{iframe},freq{iframe},phase{iframe},framesize,fs,wintype,cframe(iframe));
+    % Stationary synthesis inside each frame
+    [amplitude_frame(:,iframe,:),frequency_frame(:,iframe,:),phase_frame(:,iframe,:),synthwin] = stationary_synthesis(amp(:,iframe),freq(:,iframe),ph(:,iframe),framelen,fs,center_frame(iframe),winflag);
+    
+    % OLA resynthesis
+    [time_frame(:,iframe),partial_frame(:,iframe,:)] = OLA_resynthesis(squeeze(amplitude_frame(:,iframe,:)),squeeze(phase_frame(:,iframe,:)),synthwin);
     
 end
 
-% Overlap-add frames
-[olasin] = ola(frames,nsample,wintype,cfwflag,cframe);
+% OLA scaling factor
+sc = tools.ola.colasum(winflag)*(framelen/2)/hop;
 
-% Scaling factor
-sc = colasum(wintype)*(framesize/2)/hopsize;
+% Overlap-add time_frame
+sinusoidal = ola(time_frame,framelen,hop,nsample,center_frame,nframe,winflag,causalflag)/sc;
 
-% Scale OLA
-sinusoidal = olasin/sc;
+% Overlap-add partials
+partial = ola(partial_frame,framelen,hop,nsample,center_frame,nframe,winflag,causalflag)/sc;
 
-% Get frequencies as derivative of phases
-% frequencies = gradient(phases);
+% Overlap-add amplitude
+amplitude = ola(amplitude_frame,framelen,hop,nsample,center_frame,nframe,winflag,causalflag)/sc;
+
+% Overlap-add frequency
+frequency = ola(amplitude_frame,framelen,hop,nsample,center_frame,nframe,winflag,causalflag)/sc;
+
+% Overlap-add phase
+phase = ola(amplitude_frame,framelen,hop,nsample,center_frame,nframe,winflag,causalflag)/sc;
 
 end

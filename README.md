@@ -21,6 +21,43 @@ This project has received funding from the European Union’s Horizon 2020 resea
 
 ---
 
+## SMT 0.2.0-alpha.1
+
+Sound Morphing Toolbox (SMT) version 0.2.0 alpha release build 1
+
+### What's new in version 0.2.0
+
+- Fully vectorized sinusoidal analysis
+- Vectorized sinusoidal resynthesis
+- Namespace `+STFT` for the short-time Fourier transform
+- Namespace `+tools` for the core functions
+- Refactored codebase into low-level core functionality and high-level calls to core functions
+- Added support for power scaling spectral estimation of sinusoidal parameters
+- Standardization of nomenclature of entire codebase
+- Refactored and restructured partial tracking
+- Updated functions in folder `+tools/+spec/` to also handle odd FFT size
+
+### New functions/features
+
+- Function `SM/freq_matching.m` was completely refactored into several local functions called as subroutines
+- Partial tracking step has a dedicated function `SM/partial_tracking.m`, which calls the functions `SM/peak2peak_freq_matching.m` and `SM/freq_matching.m`
+- Introduced power scaling sinusoidal parameter estimation in functions `XQIFFT/xqifft.m` and `XQIFFT/interp_pow_scaling.m`
+- Added functions `tools.sin.is2ptpeak.m`, `tools.sin.is3ptpeak.m`, `tools.sin.ispeak.m`
+- Added function `tools.math.quadfit.m` with improved implementation of quadratic fit that also handles _symmetrical spectral peaks_
+- Introduced subroutine `SM/parameter_estimation.m`
+- Updated function `SM/peak_picking.m` inside _parameter estimation_ to handle _regular_ and _symmetrical_ spectral peaks
+- Updated all functions in folder `+tools/+spec/` to be able to handle even or odd size of the DFT
+
+### Deprecated functions/features
+
+- Several functions became deprecated and were replaced
+
+### Bug fixes
+
+- Several bug fixes
+
+---
+
 ## SMT 0.1.1
 
 Sound Morphing Toolbox (SMT) version 0.1.1

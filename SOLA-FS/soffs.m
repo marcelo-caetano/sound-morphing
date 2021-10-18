@@ -1,65 +1,78 @@
-function [frames,duration] = soffs(sig,shopsize,winlen,center,maxcorr,alpha)
-%SOFFS    Split into overlapping frames
+function [time_frames,nsample] = soffs(wav,framelen,hopsynth,maxcorr,alpha,causalflag)
+%SOFFS    Split into overlapping time_frames
 %
 %   See also OLAFS
 
+% 2016 MCaetano (Revised)
+% 2019 MCaetano SMT 0.1.0
+% 2020 MCaetano SMT 0.1.1 (Revised)
+% 2020 MCaetano SMT 0.2.0
+% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+
+
+%TODO: CHECK INPUTS (CLASS, ETC)
+%TODO: PROCESS EACH CHANNEL OF STEREO SOUNDS SEPARATELY
+
 % Make SIG column vector
-sig = sig(:);
+wav = wav(:); % WARNING! THIS CONCATENATES THE CHANNELS OF STEREO SOUNDS
+
 % Duration of SIG in samples
-duration = size(sig,1);
+nsample = size(wav,1);
 
 % Check synthesis overlap
-[noverlap] = sofprep(shopsize,winlen);
+[noverlap] = sofprep(framelen,hopsynth);
 
 % Perform SOF
-[frames] = sofexe(sig,winlen,shopsize,maxcorr,center,alpha,duration,noverlap);
+[time_frames] = sofexe(wav,framelen,hopsynth,maxcorr,alpha,nsample,noverlap,causalflag);
 
 end
 
-function [noverlap] = sofprep(shopsize,winlen)
+function [noverlap] = sofprep(framelen,hopsynth)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CHECK THAT ANALYSIS FRAMES OVERLAP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-noverlap = winlen - shopsize;
+noverlap = framelen - hopsynth;
 
-%shopsize == winlen
+%hopsynth == framelen
 if noverlap == 0
     
-    warning('AdjacentFrames: Frames are adjancent. Frames do not overlap. Typically, consecutive frames overlap by 50%.')
+    warning(['SMT:AdjacentFrames: ','Frames do not overlap because the hop size %d is equal to the frame size %d.\n'...
+        'Typically, consecutive time_frames overlap by 50%.\n'],framelen,hopsynth)
     
-    %shopsize > winlen
+    %hopsynth > framelen
 elseif noverlap < 0
     
-    warning(['NonOverlappingFrames: Frames do not overlap. There is a gap of ' num2str(abs(noverlap)) ' samples between consecutive frames.'])
+    warning(['SMT:NonOverlappingFrames: ','Frames do not overlap because the hop size %d is greater than the frame size %d.\n'...
+        'There is a gap of %d samples between consecutive time_frames.'],framelen,hopsynth,abs(noverlap))
     
 end
 
 end
 
-function [frames] = sofexe(sig,winlen,shopsize,maxcorr,center,alpha,duration,noverlap)
+function [time_frames] = sofexe(wav,framelen,hopsynth,maxcorr,alpha,nsample,noverlap,causalflag)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % INITIALIZE VARIABLES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Calculate the analysis hop size
-ahopsize = fix(shopsize/alpha);
+hopanal = fix(hopsynth/alpha);
 
-% Calculate the maximum number of frames NUMBER_FRAMES
-maxframe = nframes(duration,winlen,ahopsize,center);
+% Calculate the maximum number of time_frames NUMBER_FRAMES
+maxnframe = tools.dsp.numframe(nsample,framelen,hopanal,causalflag);
 
-% Initialize the matrix FRAMES that will hold the signal frames
-frames = zeros(winlen,maxframe);
+% Initialize the matrix FRAMES that will hold the signal time_frames
+time_frames = zeros(framelen,maxnframe);
 
 % Initialize center of analysis window (in signal reference)
-caw = zeros(maxframe,1);
+caw = zeros(maxnframe,1);
 
 % Initialize center of synthesis window (in signal reference)
-csw = zeros(maxframe,1);
+csw = zeros(maxnframe,1);
 
 % Initialize predicted offset
-poffset = zeros(maxframe,1);
+predoffset = zeros(maxnframe,1);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FIRST FRAME
@@ -69,18 +82,16 @@ poffset = zeros(maxframe,1);
 iframe = 1;
 
 % Position of center of synthesis window (in signal reference)
-csw(iframe) = cfw(winlen,center);
+csw(iframe) = tools.dsp.centerwin(framelen,causalflag);
 
 % Position of center of analysis window (in signal reference)
-caw(iframe) = cfw(winlen,center);
+caw(iframe) = tools.dsp.centerwin(framelen,causalflag);
 
 % Initialize offset
-poffset(iframe) = 0;
+predoffset(iframe) = 0;
 
 % Make first frame
-frames(:,iframe) = makeframe(sig,caw(iframe),winlen,duration);
-
-% fprintf(1,'Frame = %d caw = %d csw = %d Predicted offset = %d\n',iframe,caw(iframe),csw(iframe),poffset(iframe));
+time_frames(:,iframe) = makeframe(wav,caw(iframe),framelen,nsample);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % REMAINING FRAMES
@@ -90,87 +101,35 @@ frames(:,iframe) = makeframe(sig,caw(iframe),winlen,duration);
 iframe = iframe + 1;
 
 % Next center of synthesis window (in signal reference)
-csw(iframe) = csw(iframe-1) + shopsize;
+csw(iframe) = csw(iframe-1) + hopsynth;
 
 % Next center of analysis window (in signal reference)
-caw(iframe) = caw(iframe-1) + ahopsize;
+caw(iframe) = caw(iframe-1) + hopanal;
 
 % Predict next offset
-poffset(iframe) = poffset(iframe-1) + shopsize - ahopsize;
+predoffset(iframe) = predoffset(iframe-1) + hopsynth - hopanal;
 
-while iframe <= maxframe && caw(iframe) <= duration
+while iframe <= maxnframe && caw(iframe) <= nsample
     
-    if abs(poffset(iframe)) <= maxcorr && abs(poffset(iframe)) >= 0
+    if abs(predoffset(iframe)) <= maxcorr && abs(predoffset(iframe)) >= 0
         
         % Update frame
-        frames(:,iframe) = makeframe(sig,caw(iframe)+poffset(iframe),winlen,duration);
-        
-        %             figure(1)
-        %             subplot(2,1,1)
-        %             plot(csw(iframe-1)-lhw(winlen):csw(iframe-1)+rhw(winlen),frames(:,iframe-1),'k')
-        %             hold on
-        %             plot(csw(iframe)-lhw(winlen):csw(iframe)+rhw(winlen),frames(:,iframe),'r')
-        %             hold off
-        %             title('Predicted offset from frames')
-        %             legend('previous frame','current frame')
-        %             subplot(2,1,2)
-        %             plot(csw(iframe-1)-lhw(winlen):csw(iframe-1)+rhw(winlen),sig(caw(iframe-1)+poffset(iframe-1)-lhw(winlen):caw(iframe-1)+poffset(iframe-1)+rhw(winlen)),'b')
-        %             hold on
-        %             plot(csw(iframe)-lhw(winlen):csw(iframe)+rhw(winlen),sig(caw(iframe)+poffset(iframe)-lhw(winlen):caw(iframe)+poffset(iframe)+rhw(winlen)),'r')
-        %             hold off
-        %             title('Predicted offset from signal')
-        %             legend('previous frame','current frame')
-        %
-        %         fprintf(1,'Frame = %d caw = %d csw = %d Predicted offset = %d\n',iframe,caw(iframe),csw(iframe),poffset(iframe));
+        time_frames(:,iframe) = makeframe(wav,caw(iframe)+predoffset(iframe),framelen,nsample);
         
     else
         
         % Make frame
-        frames(:,iframe) = makeframe(sig,caw(iframe),winlen,duration);
-        
-        %             figure(1)
-        %             subplot(2,1,1)
-        %             plot(csw(iframe-1)-lhw(winlen):csw(iframe-1)+rhw(winlen),frames(:,iframe-1),'k')
-        %             hold on
-        %             plot(csw(iframe)-lhw(winlen):csw(iframe)+rhw(winlen),frames(:,iframe),'r')
-        %             hold off
-        %             title('Before cross corelation from frames')
-        %             legend('previous frame','current frame')
-        %             subplot(2,1,2)
-        %             plot(csw(iframe-1)-lhw(winlen):csw(iframe-1)+rhw(winlen),sig(caw(iframe-1)+poffset(iframe-1)-lhw(winlen):caw(iframe-1)+poffset(iframe-1)+rhw(winlen)),'b')
-        %             hold on
-        %             plot(csw(iframe)-lhw(winlen):csw(iframe)+rhw(winlen),sig(caw(iframe)-lhw(winlen):caw(iframe)+rhw(winlen)),'r')
-        %             hold off
-        %             title('Before cross corelation from signal')
-        %             legend('previous frame','current frame')
+        time_frames(:,iframe) = makeframe(wav,caw(iframe),framelen,nsample);
         
         % Cross correlate only overlapping samples (in CAW reference) LAGS refer to IFRAME shifting
-        [xc,xl] = xcorrel([frames(:,iframe);zeros(maxcorr+noverlap,1)],frames(:,iframe-1),winlen,shopsize,0,1,maxcorr);
+        [xc,xl] = xcorrel([time_frames(:,iframe);zeros(maxcorr+noverlap,1)],time_frames(:,iframe-1),framelen,hopsynth,0,1,maxcorr);
         
         [~,ind] = max(xc);
         
-        poffset(iframe) = xl(ind);
+        predoffset(iframe) = xl(ind);
         
         % Update frame
-        frames(:,iframe) = makeframe(sig,caw(iframe)+poffset(iframe),winlen,duration);
-        
-        %             figure(2)
-        %             subplot(2,1,1)
-        %             plot(csw(iframe-1)-lhw(winlen):csw(iframe-1)+rhw(winlen),frames(:,iframe-1),'k')
-        %             hold on
-        %             plot(csw(iframe)-lhw(winlen):csw(iframe)+rhw(winlen),frames(:,iframe),'r')
-        %             hold off
-        %             title('Calculated offset from frames')
-        %             legend('previous frame','current frame')
-        %             subplot(2,1,2)
-        %             plot(csw(iframe-1)-lhw(winlen):csw(iframe-1)+rhw(winlen),sig(caw(iframe-1)+poffset(iframe-1)-lhw(winlen):caw(iframe-1)+poffset(iframe-1)+rhw(winlen)),'b')
-        %             hold on
-        %             plot(csw(iframe)-lhw(winlen):csw(iframe)+rhw(winlen),sig(caw(iframe)+poffset(iframe)-lhw(winlen):caw(iframe)+poffset(iframe)+rhw(winlen)),'r')
-        %             hold off
-        %             title('Calculated offset from signal')
-        %             legend('previous frame','current frame')
-        %             
-        %             fprintf(1,'Frame = %d caw = %d csw = %d Calculated offset = %d\n',iframe,caw(iframe),csw(iframe),poffset(iframe));
+        time_frames(:,iframe) = makeframe(wav,caw(iframe)+predoffset(iframe),framelen,nsample);
         
     end
     
@@ -182,62 +141,62 @@ while iframe <= maxframe && caw(iframe) <= duration
     iframe = iframe + 1;
     
     % Update predicted offset
-    poffset(iframe) = poffset(iframe-1) + shopsize - ahopsize;
+    predoffset(iframe) = predoffset(iframe-1) + hopsynth - hopanal;
     
     % Next center of synthesis window (in signal reference)
-    csw(iframe) = csw(iframe-1) + shopsize;
+    csw(iframe) = csw(iframe-1) + hopsynth;
     
     % Next center of analysis window (in signal reference)
-    caw(iframe) = caw(iframe-1) + ahopsize;
+    caw(iframe) = caw(iframe-1) + hopanal;
     
 end
 
 end
 
 % FUNCTION THAT MAKES EACH FRAME
-function frame = makeframe(sig,cw,winlen,duration)
+function frame = makeframe(wav,cw,framelen,nsample)
 
-frame = zeros(winlen,1);
+frame = zeros(framelen,1);
 
 if cw < 1
     
-    up_bound = cw + rhw(winlen);
+    up_bound = cw + tools.dsp.rightwin(framelen);
     
     if up_bound > 0
         
-        frame(winlen-(up_bound-1):winlen) = sig(1:up_bound);
+        frame(framelen-(up_bound-1):framelen) = wav(1:up_bound);
         
     end
     
-elseif cw > duration
+elseif cw > nsample
     
-    low_bound = cw - lhw(winlen);
+    low_bound = cw - tools.dsp.leftwin(framelen);
     
-    if low_bound < duration
+    if low_bound < nsample
         
-        frame(1:duration-(low_bound-1)) = sig(low_bound:duration);
+        frame(1:nsample-(low_bound-1)) = wav(low_bound:nsample);
         
     end
     
 else
     
     % sample position of lower window bound in signal reference
-    low_bound = max(1,cw - lhw(winlen));
+    low_bound = max(1,cw - tools.dsp.leftwin(framelen));
     
     % sample position of upper window bound in signal reference
-    up_bound = min(duration,cw + rhw(winlen));
+    up_bound = min(nsample,cw + tools.dsp.rightwin(framelen));
     
-    if cw - lhw(winlen) < 1
+    if cw - tools.dsp.leftwin(framelen) < 1
         
-        frame(winlen-(up_bound-low_bound):winlen) = sig(low_bound:up_bound);
+        frame(framelen-(up_bound-low_bound):framelen) = wav(low_bound:up_bound);
         
-    elseif cw + rhw(winlen) > duration
+    elseif cw + tools.dsp.rightwin(framelen) > nsample
         
-        frame(1:(up_bound-low_bound)+1) = sig(low_bound:up_bound);
+        frame(1:(up_bound-low_bound)+1) = wav(low_bound:up_bound);
         
     else
         
-        frame(1:winlen) = sig(low_bound:up_bound);
+        frame(1:framelen) = wav(low_bound:up_bound);
         
     end
     
@@ -247,11 +206,11 @@ end
 
 function [Rxy,Rl] = xcorrel(x,y,W,Ss,Kmin,Kdec,Kmax)
 
-if nargin < 3;  W = 600;        end;
-if nargin < 4;  Ss = 120;       end;
-if nargin < 5;  Kmin = 0;       end;
-if nargin < 6;  Kdec = 1;       end;
-if nargin < 7;  Kmax = W + Ss;  end;
+if nargin < 3;  W = 600;        end
+if nargin < 4;  Ss = 120;       end
+if nargin < 5;  Kmin = 0;       end
+if nargin < 6;  Kdec = 1;       end
+if nargin < 7;  Kmax = W + Ss;  end
 
 % if Kmax > W + Ss
 %     Kmax = W + Ss;
@@ -283,14 +242,6 @@ rxx = zeros(length(Rl),1);
 k = 1;
 
 for ixc = Rl
-    
-    %     figure(1)
-    %     plot(Ss+1:W,y(Ss+1:W),'k')
-    %     hold on
-    %     plot(1:Wov,x(1+k:Wov+k),'r')
-    %     hold off
-    %     title(sprintf('k = %d',k))
-    %     pause(0.01)
     
     rxy(k) = sum(x(1+ixc:Wov+ixc).*y(Ss+1:W));
     

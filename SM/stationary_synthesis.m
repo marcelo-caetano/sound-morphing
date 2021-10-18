@@ -1,47 +1,47 @@
-function [addsynth,partials,amplitude,phase_argument] = stationary_synthesis(amp,freq,ph,framesize,sr,wintype,cframe)
-%STATIONARY_SYNTHESIS synthesize stationary sinusoid inside frame.
-%   [Add] = STATIONARY_SYNTHESIS(A,F,P,M,Fs,WINTYPE,CFRAME)
-%   Synthesize each partial as s(n) = A*cos(2*pi*F*T/SR + Theta)
-%   Theta is the ph shift calculated as Theta = P - 2*pi*f*T/SR
+function [amplitude,frequency,phase_argument,synthwin] = stationary_synthesis(amp,freq,ph,framelen,fs,cframe,winflag)
+%STATIONARY_SYNTHESIS Synthesis of stationary sinusoids inside each frame.
+%   [AMP,FREQ,PH,SWIN] = STATIONARY_SYNTHESIS(A,F,P,M,Fs,CFR,WINFLAG)
+%   synthesizes each partial as s(n) = A*cos(2*pi*F*M/Fs + THETA)
+%   THETA is the phase shift calculated as THETA = P - 2*pi*f*M/Fs, where M
+%   is the frame length and Fs is the sampling rate.
+%
+%   See also PARAMETER_INTERPOLATION, FREQUENCY_INTEGRATION
 
 % 2017 M Caetano; Revised 2019
+% 2020 MCaetano SMT 0.2.0
+% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
 
-% Number of partials
-npartial = length(amp);
 
-% Make samples spanning frame framesize
-samples = (cframe-lhw(framesize):cframe+rhw(framesize))';
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHECK INPUT ARGUMENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Make analysis window
-synthwin = gencolawin(framesize,wintype);
+% Check number of input arguments
+narginchk(7,7);
 
-% Initialize variables
-partials = zeros(framesize,npartial);
-amplitude = zeros(framesize,npartial);
-phase_argument = zeros(framesize,npartial);
-addsynth = zeros(framesize,1);
-phase_shift = zeros(npartial,1);
+% Check number of output arguments
+nargoutchk(0,4);
 
-for ipartial = 1:npartial
-    
-    % Synthesize constant amplitude vector
-    % amplitude(:,ipartial) = 2*amp(ipartial)*ones(framesize,1);
-    
-    % Calculate ph shift (using center of frame as reference)
-    phase_shift(ipartial) = ph(ipartial) - freq(ipartial)*2*pi*cframe/sr;
-    
-    % Synthesize ph argument
-    phase_argument(:,ipartial) = freq(ipartial)*2*pi*samples/sr + phase_shift(ipartial);
-    
-    % Synthesize partial
-    partials(:,ipartial) = 2*amp(ipartial)*cos(phase_argument(:,ipartial));
-    % partials(:,ipartial) = amplitude(:,ipartial).*cos(phase_argument(:,ipartial)).*synthwin;
-    
-    % Add partial to final synthesis
-    addsynth = addsynth + partials(:,ipartial);
-    
-end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FUNCTION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-addsynth = addsynth.*synthwin;
+% Make samples spanning frame framelen
+samples = (cframe-tools.dsp.leftwin(framelen):cframe+tools.dsp.rightwin(framelen))';
+
+% Make synthesis window
+synthwin = tools.ola.mkcolawin(framelen,winflag);
+
+% Calculate phase shift (using causalflag of frame as reference)
+phase_shift = ph - (2*pi*cframe/fs)*freq;
+
+% Calculate phase argument
+phase_argument = 2*pi*samples/fs*freq' + repmat(phase_shift',framelen,1);
+
+% Constant amplitude across frame
+amplitude = repmat(amp',framelen,1);
+
+% Get frequencies as derivative of phases
+frequency = gradient(phase_argument);
 
 end

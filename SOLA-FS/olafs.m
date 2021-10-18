@@ -1,7 +1,7 @@
-function [outsig] = olafs(frames,duration,winlen,hopsize,center)
+function finalwav = olafs(timeframe,framelen,hop,nsample,causalflag)
 %OLAFS Overlap Add columns of INPUT_SIG by WINSIZE-HOP_SIZE
 %
-%   CENTER is a flag that determines the center of the first analysis window
+%   CAUSALFLAG determines the center of the first analysis window
 %
 %   WINDOW_TYPE
 %
@@ -15,75 +15,71 @@ function [outsig] = olafs(frames,duration,winlen,hopsize,center)
 %
 %   See also SOFFS
 
-switch center
-    
-    case 'one'
-        
-        % SHIFT is the number of zeros before CW
-        shift = lhw(winlen);
-        
-    case 'half'
-        
-        % SHIFT is the number of zeros before CW
-        shift = 0;
-        
-    case 'nhalf'
-        
-        % SHIFT is the number of zeros before CW
-        shift = winlen;
-        
-    otherwise
-        
-        warning('InvalidFlag: Flag that specifies the center of the first analysis window must be ONE, HALF, or NHALF. Using default value ONE');
-        
-end
+% 2016 M Caetano
+% 2020 MCaetano SMT 0.1.1 (Revised)
+% 2020 MCaetano SMT 0.2.0
+% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% CHECK INPUT ARGUMENTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Check number if input arguments
+narginchk(5,5);
+
+% Check number if output arguments
+nargoutchk(0,1);
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FUNCTION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Zero-padding at start and end for frame-based processing
+shift = tools.dsp.causal_zeropad(framelen,causalflag);
 
 % Preallocate final signal
-olasig = zeros(duration+shift,1);
+olawav = zeros(nsample + shift,1);
 
-% Number of frames
-nframe = size(frames,2);
+% Number of timeframe
+nframe = size(timeframe,2);
 
 % Number of samples that overlap
-noverlap = winlen - hopsize;
+noverlap = framelen - hop;
 
-% Center of frames (in signal reference)
-cframe = f2s(1:nframe,cfw(winlen,center),hopsize);
+% Center of timeframe (in signal reference)
+center_frame = tools.dsp.frame2sample(1:nframe,tools.dsp.centerwin(framelen,causalflag),hop);
 
-% Fading factor
+% Fade-in factor
 fadein = linspace(0,1,noverlap)';
 
 for iframe = 1:nframe
     
-    % Begin of frame (in signal reference)
-    bframe = cframe(iframe) - lhw(winlen) + shift;
+    % Beginning of frame (in signal reference)
+    begframe = center_frame(iframe) - tools.dsp.leftwin(framelen) + shift;
     
     % End of frame (in signal reference)
-    eframe = cframe(iframe) + rhw(winlen) + shift;
+    endframe = center_frame(iframe) + tools.dsp.rightwin(framelen) + shift;
     
     if iframe == 1
         
-        olasig(bframe:bframe+noverlap-1) = olasig(bframe:bframe+noverlap-1) + frames(1:noverlap,iframe);
+        olawav(begframe:begframe + noverlap - 1) = ...
+            olawav(begframe:begframe + noverlap - 1) + ...
+            timeframe(1:noverlap,iframe);
         
     else
         
-        olasig(bframe:bframe+noverlap-1) = (1-fadein).*olasig(bframe:bframe+noverlap-1) + fadein.*frames(1:noverlap,iframe);
+        olawav(begframe:begframe + noverlap - 1) = ...
+            (1 - fadein) .* olawav(begframe:begframe + noverlap - 1) + ...
+            fadein .* timeframe(1:noverlap,iframe);
         
     end
     
-    olasig(bframe+noverlap:eframe) = frames(noverlap+1:winlen,iframe);  
+    olawav(begframe + noverlap:endframe) = ...
+        timeframe(noverlap + 1:framelen,iframe);
     
 end
 
-% for cf = cframe
-%
-%     framenumber = s2f(cf,1,hopsize);
-%
-%     olasig(cf:cf+winlen-1) = olasig(cf:cf+winlen-1) + frames(:,framenumber);
-%     olasig(cf-lhw(winlen)+shift:cf+rhw(winlen)+shift) = olasig(cf-lhw(winlen)+shift:cf+rhw(winlen)+shift) + frames(:,framenumber);
-%
-% end
-
-outsig = olasig(1+shift:duration+shift);
+finalwav = olawav(1+shift:nsample+shift);
 
 end

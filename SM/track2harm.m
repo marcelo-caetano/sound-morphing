@@ -1,6 +1,14 @@
 function [ampharm,freqharm,phaseharm,isharmonic] = track2harm(amptrack,freqtrack,phasetrack,ntrack,nframe,f0,delta)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
+%
+%   See also
+
+% 2019 MCaetano SMT 0.1.0
+% 2020 MCaetano SMT 0.1.1 (Revised)
+% 2020 MCaetano SMT 0.2.0
+% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+
 
 a=1;
 
