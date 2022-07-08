@@ -1,4 +1,4 @@
-function [amp,freq,ph,npart] = peak2peak_freq_matching(amplitude,frequency,phase,delta,hop,fs,nframe)
+function [amp,freq,ph,npart] = peak2peak_freq_matching(amplitude,frequency,phase,freqdiff,hop,fs,nframe)
 %PEAK2PEAK_FREQ_MATCHING Peak-to-peak frequency matching.
 %   [Amp,Freq,Ph] = PEAK2PEAK_FREQ_MATCHING(A,F,P,DELTA,HOP,FS,NFRAME)
 %   performs partial tracking using the peak-to-peak frequency matching
@@ -10,7 +10,7 @@ function [amp,freq,ph,npart] = peak2peak_freq_matching(amplitude,frequency,phase
 
 % 2020 MCaetano SMT
 % 2021 M Caetano SMT
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 % TODO: ADAPT FOR STEREO PROCESSING
@@ -30,6 +30,9 @@ nargoutchk(0,4);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Initialize variables
+% amp = amplitude(:,1,:);
+% freq = frequency(:,1,:);
+% ph = phase(:,1,:);
 amp = amplitude(:,1);
 freq = frequency(:,1);
 ph = phase(:,1);
@@ -38,7 +41,8 @@ ph = phase(:,1);
 for iframe = 2:nframe
     
     % Frequency matching
-    [amp,freq,ph,npart] = freq_matching(amp,freq,ph,amplitude(:,iframe),frequency(:,iframe),phase(:,iframe),delta,hop,fs,iframe-1);
+    % [amp,freq,ph,npart] = freq_matching(amp,freq,ph,amplitude(:,iframe,:),frequency(:,iframe,:),phase(:,iframe,:),freqdiff,hop,fs,iframe-1);
+    [amp,freq,ph,npart] = freq_matching(amp,freq,ph,amplitude(:,iframe),frequency(:,iframe),phase(:,iframe),freqdiff,hop,fs,iframe-1);
     
 end
 

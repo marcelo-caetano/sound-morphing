@@ -12,7 +12,7 @@ function [amp_prev,freq_prev,ph_prev,npartial] = freq_matching(amp_prev,freq_pre
 
 % 2020 MCaetano SMT 0.2.1 (Revised)
 % 2021 M Caetano SMT (Revised)
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 % TODO: UNIT TEST WITH SYNTHETIC PARTIALS THAT SIMULATE MATCH, DEATH, BIRTH

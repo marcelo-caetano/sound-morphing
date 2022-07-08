@@ -30,7 +30,7 @@ function [xm,ym,conc] = quadfit(x1,x2,x3,y1,y2,y3,tol)
 % 2019 MCaetano SMT 0.1.0 (Revised)
 % 2020 MCaetano SMT 0.2.0
 % 2021 M Caetano SMT
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

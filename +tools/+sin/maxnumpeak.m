@@ -1,4 +1,4 @@
-function [amp,freq,ph] = maxnumpeak(peak_amp,peak_freq,peak_ph,maxnpeak,nbin,nframe,nchannel,npeakflag)
+function [amp,freq,ph,sort_trunc_linear_index] = maxnumpeak(peak_amp,peak_freq,peak_ph,maxnpeak,nbin,nframe,nchannel,npeakflag)
 %MAXNUMPEAK Maximum number of peaks.
 %   [A,F,P] = MAXNUMPEAK(Ap,Fp,Pp,MAXNPEAK,NBIN,NFRAME,NCHANNEL) selects up
 %   TO MAXNPEAK peaks per frame with the highest amplitude. Ap are the
@@ -22,7 +22,7 @@ function [amp,freq,ph] = maxnumpeak(peak_amp,peak_freq,peak_ph,maxnpeak,nbin,nfr
 
 % 2020 MCaetano SMT 0.1.2 (Revised)
 % 2021 M Caetano SMT (Revised)
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -33,7 +33,7 @@ function [amp,freq,ph] = maxnumpeak(peak_amp,peak_freq,peak_ph,maxnpeak,nbin,nfr
 narginchk(7,8);
 
 % Check number of output arguments
-nargoutchk(0,3);
+nargoutchk(0,4);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FUNCTION
@@ -46,6 +46,12 @@ if nargin == 7
     
 end
 
+if isinf(maxnpeak)
+    
+    maxnpeak = nbin;
+    
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FUNCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -53,7 +59,7 @@ end
 % Sort peaks by DESCENDING amplitudes (placing NaN last)
 [~,index_sorted] = sort(peak_amp,1,'descend','MissingPlacement','last');
 
-% Get indices of MAXNPEAK peaks per frame
+% Get subscripts (indices) of MAXNPEAK peaks per frame
 trunc_index = index_sorted(1:maxnpeak,:,:);
 
 % Recover original position (ascending index == original frequency)
@@ -89,6 +95,10 @@ sort_trunc_linear_index = sub2ind([nbin,nframe,nchannel],sort_trunc_index,colsub
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 if npeakflag
+    
+    % NOTE: This assignment returns arrays with MAXNPEAK x NFRAME x NPAGE
+    % because SORT(...,'descend','MissingPlacvement','last') followed by
+    % SORT(...,'ascend') keeps NaN at original positions.
     
     % Return MAXNPEAK amplitudes (with at most MAXNPEAK values)
     amp = peak_amp(sort_trunc_linear_index);

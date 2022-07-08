@@ -1,6 +1,6 @@
-function [amplitude,frequency,phase_argument,synthwin] = stationary_synthesis(amp,freq,ph,framelen,fs,cframe,winflag)
+function [amplitude,frequency,phase_argument] = stationary_synthesis(amp,freq,ph,framelen,fs,cframe,nchannel)
 %STATIONARY_SYNTHESIS Synthesis of stationary sinusoids inside each frame.
-%   [AMP,FREQ,PH,SWIN] = STATIONARY_SYNTHESIS(A,F,P,M,Fs,CFR,WINFLAG)
+%   [AMP,FREQ,PH,SWIN] = STATIONARY_SYNTHESIS(A,F,P,M,Fs,CFR,NCHANNEL)
 %   synthesizes each partial as s(n) = A*cos(2*pi*F*M/Fs + THETA)
 %   THETA is the phase shift calculated as THETA = P - 2*pi*f*M/Fs, where M
 %   is the frame length and Fs is the sampling rate.
@@ -9,7 +9,8 @@ function [amplitude,frequency,phase_argument,synthwin] = stationary_synthesis(am
 
 % 2017 M Caetano; Revised 2019
 % 2020 MCaetano SMT 0.2.0
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% 2021 M Caetano SMT
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -20,26 +21,33 @@ function [amplitude,frequency,phase_argument,synthwin] = stationary_synthesis(am
 narginchk(7,7);
 
 % Check number of output arguments
-nargoutchk(0,4);
+nargoutchk(0,3);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FUNCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Make samples spanning frame framelen
-samples = (cframe-tools.dsp.leftwin(framelen):cframe+tools.dsp.rightwin(framelen))';
+% Length of left half of frame
+leftlen = tools.dsp.leftwin(framelen);
+% Length of right half of frame
+rightlen = tools.dsp.rightwin(framelen);
 
-% Make synthesis window
-synthwin = tools.ola.mkcolawin(framelen,winflag);
+sample_vec = (cframe - leftlen:cframe + rightlen)';
 
-% Calculate phase shift (using causalflag of frame as reference)
-phase_shift = ph - (2*pi*cframe/fs)*freq;
+% FRAMELEN x NCHANNEL
+time_sample = repmat(sample_vec,1,nchannel);
 
-% Calculate phase argument
-phase_argument = 2*pi*samples/fs*freq' + repmat(phase_shift',framelen,1);
+% Use center of frame as reference: NPART x 1 x NCHANNEL
+phase_shift = ph - 2*pi*cframe*freq/fs;
 
-% Constant amplitude across frame
-amplitude = repmat(amp',framelen,1);
+% TIME_SAMPLE: FRAMELEN x NCHANNEL x 1
+% permute(FREQ,[2 3 1]) == permute(PHASE_SHIFT,[2 3 1]): 1 x NCHANNEL x NPARTIAL
+% repmat(permute(PHASE_SHIFT,[2 3 1]),framelen,1,1): FRAMELEN x NCHANNEL x NPARTIAL
+% PHASE_ARGUMENT: FRAMELEN x NCHANNEL x NPARTIAL
+phase_argument = 2*pi*time_sample.*permute(freq,[2 3 1])/fs + repmat(permute(phase_shift,[2 3 1]),framelen,1,1);
+
+% repmat(permute(AMP,[2 3 1]),framelen,1,1): FRAMELEN x NCHANNEL x NPARTIAL
+amplitude = repmat(permute(amp,[2 3 1]),framelen,1,1);
 
 % Get frequencies as derivative of phases
 frequency = gradient(phase_argument);

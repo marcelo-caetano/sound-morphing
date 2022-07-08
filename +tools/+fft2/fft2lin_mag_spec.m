@@ -30,7 +30,7 @@ function linmagspec = fft2lin_mag_spec(fft_frame,nfft,posspecflag,nrgflag)
 %   See also FFT2LOG_MAG_SPEC, FFT2POW_MAG_SPEC, FFT2SCALED_MAG_SPEC
 
 % 2021 M Caetano SMT
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

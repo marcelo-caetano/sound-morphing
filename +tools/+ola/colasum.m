@@ -11,7 +11,7 @@ function sumfactor = colasum(winflag)
 % 2019 MCaetano SMT 0.1.0
 % 2020 MCaetano SMT 0.1.1 (Revised)
 % 2020 MCaetano SMT 0.2.0
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %   WINDOW_TYPE
@@ -25,7 +25,7 @@ function sumfactor = colasum(winflag)
 %   7 - Hamming
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% CHECK FUNCTION ARGUMENTS
+% CHECK ARGUMENTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Number of input arguments
@@ -35,11 +35,12 @@ narginchk(1,1);
 nargoutchk(1,1);
 
 % Validate input
-validateattributes(winflag,{'single','double'},{'scalar','>',0,'<',8});
+validateattributes(winflag,{'numeric'},{'scalar','integer','>=',1,'<=',7},mfilename,'WINFLAG',1)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% BODY OF FUNCTION
+% FUNCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 sumfactor = tools.dsp.infowin(winflag,'sum');
 
 end

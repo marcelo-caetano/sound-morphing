@@ -45,7 +45,7 @@ function powmagspec = fft2pow_mag_spec(fft_frame,nfft,pow,posspecflag,nrgflag,na
 %   FFT2POS_MAG_SPEC,
 
 % 2021 M Caetano SMT
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

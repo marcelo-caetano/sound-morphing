@@ -24,11 +24,11 @@ function [sinusoidal,partial,amplitude,frequency,phase] = sinusoidal_resynthesis
 % 2016 M Caetano
 % 2020 MCaetano SMT 0.1.2 (Revised)
 % 2020 MCaetano SMT 0.2.0
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% CHECK INPUT ARGUMENTS
+% CHECK ARGUMENTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Check number of input arguments
@@ -61,7 +61,7 @@ frequency = zeros(nsample+2*shift,npartial);
 phase = zeros(nsample+2*shift,npartial);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% FROM CFRAME-LEFTWIN(WINSIZE) TO CFRAME (LEFT CAUSAL OF FIRST WINDOW)
+% FROM CFRAME-LEFTWIN(WINSIZE) TO CFRAME (LEFT SIDE OF FIRST WINDOW)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Range of time samples (including SHIFT)

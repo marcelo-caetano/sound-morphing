@@ -1,4 +1,4 @@
-function [amp,freq,ph] = trunc_spec_peak(peak_amp,peak_freq,peak_ph,maxnpeak,nfft,nframe,nchannel,npeakflag)
+function [amp,freq,ph,indmaxnpeak] = trunc_spec_peak(peak_amp,peak_freq,peak_ph,maxnpeak,nfft,nframe,nchannel,npeakflag)
 %TRUNC_SPEC_PEAK Maximum number of peaks.
 %   [A,F,P] = TRUNC_SPEC_PEAK(Ap,Fp,Pp,MAXNPEAK,NFFT,NFRAME,NCHANNEL)
 %   selects up to MAXNPEAK peaks per frame with the highest amplitude Ap.
@@ -21,7 +21,7 @@ function [amp,freq,ph] = trunc_spec_peak(peak_amp,peak_freq,peak_ph,maxnpeak,nff
 
 % 2020 MCaetano SMT 0.1.2 (Revised)
 % 2021 M Caetano SMT (Revised)
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -32,7 +32,7 @@ function [amp,freq,ph] = trunc_spec_peak(peak_amp,peak_freq,peak_ph,maxnpeak,nff
 narginchk(7,8);
 
 % Check number of output arguments
-nargoutchk(0,3);
+nargoutchk(0,4);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FUNCTION
@@ -60,10 +60,13 @@ if maxnpeak >= nbin
     freq = peak_freq;
     ph = peak_ph;
     
+    % Linear indices of all NBIN
+    indmaxnpeak = reshape(1:nbin*nframe*nchannel,nbin,nframe,nchannel);
+    
 else
     
     % Return only up to MAXNPEAK peaks in AMP, FREQ, and PH
-    [amp,freq,ph] = tools.sin.maxnumpeak(peak_amp,peak_freq,peak_ph,maxnpeak,nbin,nframe,nchannel,npeakflag);
+    [amp,freq,ph,indmaxnpeak] = tools.sin.maxnumpeak(peak_amp,peak_freq,peak_ph,maxnpeak,nbin,nframe,nchannel,npeakflag);
     
 end
 

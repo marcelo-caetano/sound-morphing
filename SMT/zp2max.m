@@ -8,7 +8,7 @@ function [s1,s2] = zp2max(s1,s2)
 
 % 2019 M Caetano (SMT 0.1.1)
 % 2020 MCaetano SMT 0.2.1
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 % Convert to column vector

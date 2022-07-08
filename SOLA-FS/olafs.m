@@ -18,7 +18,7 @@ function finalwav = olafs(timeframe,framelen,hop,nsample,causalflag)
 % 2016 M Caetano
 % 2020 MCaetano SMT 0.1.1 (Revised)
 % 2020 MCaetano SMT 0.2.0
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -48,7 +48,8 @@ nframe = size(timeframe,2);
 noverlap = framelen - hop;
 
 % Center of timeframe (in signal reference)
-center_frame = tools.dsp.frame2sample(1:nframe,tools.dsp.centerwin(framelen,causalflag),hop);
+% center_frame = tools.dsp.frame2sample(1:nframe,tools.dsp.centerwin(framelen,causalflag),hop);
+center_frame = tools.dsp.frame2sample([1:nframe]',framelen,hop,causalflag);
 
 % Fade-in factor
 fadein = linspace(0,1,noverlap)';

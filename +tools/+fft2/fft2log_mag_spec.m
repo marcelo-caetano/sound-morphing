@@ -46,7 +46,7 @@ function logmagspec = fft2log_mag_spec(fft_frame,nfft,logflag,posspecflag,nrgfla
 % 2020 MCaetano SMT 0.1.2
 % 2020 MCaetano SMT 0.2.1
 % 2021 M Caetano SMT (Revised)
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

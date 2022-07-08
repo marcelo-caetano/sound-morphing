@@ -1,0 +1,22 @@
+#These lines specify not to try automatic line feed, diff, and merge attempts for these types of files.
+*.mlx -crlf -diff -merge
+*.mat -crlf -diff -merge
+*.fig -crlf -diff -merge
+*.mdl -crlf -diff -merge
+*.slx -crlf -diff -merge
+*.mlapp -crlf -diff -merge
+*.p -crlf -diff -merge
+*.mdlp -crlf -diff -merge
+*.slxp -crlf -diff -merge
+*.sldd -crlf -diff -merge
+*.slxc -crlf -diff -merge
+*.mlproj -crlf -diff -merge
+*.mldatx -crlf -diff -merge
+*.slreqx -crlf -diff -merge
+*.sfx -crlf -diff -merge
+*.sltx -crlf -diff -merge
+
+# Disable line-ending conversion between Windows and Linux
+* text=auto eol=lf
+*.{cmd,[cC][mM][dD]} text eol=crlf
+*.{bat,[bB][aA][tT]} text eol=crlf

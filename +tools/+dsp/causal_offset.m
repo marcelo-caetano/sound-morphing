@@ -22,7 +22,7 @@ function offset = causal_offset(framelen,causalflag)
 %   See also CAUSAL_ZEROPAD
 
 % 2021 M Caetano SMT
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
