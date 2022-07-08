@@ -13,7 +13,7 @@ function lh = leftwin(framelen)
 
 % 2016 MCaetano
 % 2020 MCaetano SMT 0.1.1 (Revised)
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

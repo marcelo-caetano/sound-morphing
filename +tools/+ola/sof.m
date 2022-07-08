@@ -33,7 +33,7 @@ function [time_frame,center_frame,nsample,nframe,nchannel,dc] = sof(wav,framelen
 % 2019 MCaetano (Revised)
 % 2020 MCaetano SMT 0.1.1 (Revised)
 % 2021 M Caetano SMT (Revised for stereo)
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,8 +46,11 @@ narginchk(6,6);
 % Check number of output arguments
 nargoutchk(0,6);
 
-%TODO: CHECK INPUTS (CLASS/VALUE/NAN)
-%TODO: HANDLE STEREO SOUNDS
+validateattributes(wav,{'numeric'},{'finite'},mfilename,'WAV',1);
+validateattributes(framelen,{'numeric'},{'scalar','integer','real','positive'},mfilename,'FRAMELEN',2)
+validateattributes(hop,{'numeric'},{'scalar','integer','real','positive'},mfilename,'HOP',3)
+validateattributes(winflag,{'numeric'},{'scalar','integer','>=',1,'<=',14},mfilename,'WINFLAG',4)
+validateattributes(causalflag,{'char','string'},{'scalartext','nonempty'},mfilename,'CAUSALFLAG',5)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FUNCTION
@@ -79,7 +82,7 @@ if noverlap == 0
     
     warning('SMT:SOF:AdjacentFrames',...
         ['Frames are adjacent.\nFrames do not overlap.\n'...
-        'Typically, consecutive time frames overlap by 50%.']);
+        'Typically, consecutive time frames overlap by 50%%.']);
     
     %hop > framelen
 elseif noverlap < 0
@@ -104,20 +107,17 @@ normwin = sum(analysis_window);
 if normflag
     % sum(ANALYSIS_WINDOW) = 1
     analysis_window = analysis_window/normwin;
-    dc = 1;
+    dc = normwin;
 else
     % No normalization
-    dc = normwin;
+    dc = 1;
 end
 
-% Number of time_frame
+% Number of time frames
 nframe = tools.dsp.numframe(nsample,framelen,hop,causalflag);
 
-% Position of the center of the first window in samples (signal reference)
-cfwin = tools.dsp.centerwin(framelen,causalflag);
-
 % Center of each frame in signal reference
-center_frame = tools.dsp.frame2sample(1:nframe,cfwin,hop);
+center_frame = tools.dsp.frame2sample([1:nframe]',framelen,hop,causalflag);
 
 end
 

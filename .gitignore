@@ -1,0 +1,10 @@
+# Ignore temporary files
+*.asv
+# Ignore folders at the same level as the .gitignore file that start with _
+# /_*/
+# Ignore folders and subfolders that start with _
+_*/
+# Ignore folders and subfolders that start with @
+@*/
+# Ignore morph.wav file
+morph.wav

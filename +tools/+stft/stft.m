@@ -31,7 +31,7 @@ function [fft_frame,center_frame,nsample,nframe,nchannel,dc] = stft(wav,framelen
 % 2020 MCaetano SMT 0.1.1 (Revised)
 % 2020 MCaetano SMT 0.2.0 (Revised)
 % 2021 M Caetano SMT (Revised for stereo)
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 % TODO: CHECK INPUT ARGUMENTS (NaN,class, etc)
@@ -76,7 +76,7 @@ end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Make overlapping time frames
-[time_frame,center_frame,nsample,nframe,nchannel,dc] = sof(wav,framelen,hop,winflag,causalflag,normflag);
+[time_frame,center_frame,nsample,nframe,nchannel,dc] = tools.ola.sof(wav,framelen,hop,winflag,causalflag,normflag);
 
 % Zero pad time frames
 zpad_frame = tools.dsp.zeropad(time_frame,nfft);

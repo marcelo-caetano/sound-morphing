@@ -4,7 +4,7 @@ function freq = step2freq(step,ref)
 %   to N steps above the reference REF Hz using the conversion F = REF*A^N,
 %   where A = 2^(1/12) for the equal tempered scale.
 %
-%   F = STEP2FREQ(N) uses REF = 440 Hz as reference for A4.
+%   F = STEP2FREQ(N) uses REF = 440 Hz by default as reference for A4.
 %
 %   See also FREQ2STEP, NOTE2FREQ, FREQ2NOTE, STEP2NOTE
 
@@ -12,7 +12,7 @@ function freq = step2freq(step,ref)
 % 2019 MCaetano SMT 0.1.0
 % 2020 MCaetano SMT 0.1.1 (Revised)
 % 2020 MCaetano SMT 0.2.0
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -73,7 +73,8 @@ end
 % FUNCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% Conversion
-freq = ref*2^(step/12);
+cents = tools.mus.step2cents(step);
+
+freq = tools.mus.cents2freq(cents,ref);
 
 end

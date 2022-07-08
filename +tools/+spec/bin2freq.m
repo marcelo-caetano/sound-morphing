@@ -18,7 +18,7 @@ function freq = bin2freq(bin,fs,nfft,nnflag)
 
 % 2016 MCaetano
 % 2020 MCaetano SMT 0.1.1 (Revised)
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,16 +37,9 @@ if nargin == 3
     
 end
 
-% Validate BIN
 validateattributes(bin,{'numeric'},{'nonempty','finite','nonnan','real','>=',-ceil(nfft/2)+1,'<=',nfft-1},mfilename,'BIN',1)
-
-% Validate Fs
-validateattributes(fs,{'numeric'},{'scalar','finite','nonnan','integer','real','positive'},mfilename,'Fs',2)
-
-% Validate NFFT
-validateattributes(nfft,{'numeric'},{'scalar','finite','nonnan','integer','real','positive'},mfilename,'NFFT',3)
-
-% Validate NNFLAG
+validateattributes(fs,{'numeric'},{'nonempty','scalar','finite','nonnan','integer','real','positive'},mfilename,'Fs',2)
+validateattributes(nfft,{'numeric'},{'nonempty','scalar','finite','nonnan','integer','real','positive'},mfilename,'NFFT',3)
 validateattributes(nnflag,{'numeric','logical'},{'scalar','nonempty','binary'},mfilename,'NNFLAG',4)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

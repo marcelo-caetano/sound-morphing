@@ -11,7 +11,7 @@ function [aestim,festim] = interp_mag_spec(amp,freq)
 % Revised 2019 SMT 0.1.1
 % 2020 MCaetano SMT 0.1.1 (Revised)
 % 2021 M Caetano SMT (Revised)
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

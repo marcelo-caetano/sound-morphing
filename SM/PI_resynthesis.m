@@ -11,7 +11,7 @@ function [add_synth,partial] = PI_resynthesis(amplitude,phase)
 % AND SIGNAL PROCESSING, VOL. ASSP-34, NO. 4.
 
 % 2020 MCaetano SMT 0.2.0
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 % Synthesize partials

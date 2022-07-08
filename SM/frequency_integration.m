@@ -28,7 +28,7 @@ function [amplitude,frequency,phase] = frequency_integration(amp,freq,ph_prev,ho
 % 2016 M Caetano
 % 2019 MCaetano SMT 0.1.0 (Revised)
 % 2020 MCaetano SMT 0.2.0
-% $Id 2021 M Caetano SMT 0.2.0-alpha.1 $Id
+% $Id 2022 M Caetano SMT 0.3.0-alpha.1 $Id
 
 
 % Transpose input
